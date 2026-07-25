@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat Test</title>
+</head>
+<body>
+  <h1>Chat Test Page</h1>
+
+  <script type='text/javascript'>
+
+    var ESW_STORAGE_KEY = 'esw_prechat_data';
+
+    function waitForPrechatForm() {
+      var iframe = document.getElementById('embeddedMessagingFrame');
+      if (!iframe) {
+        setTimeout(waitForPrechatForm, 500);
+        return;
+      }
+      iframe.addEventListener('load', function() {
+        try {
+          var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+          var observer = new MutationObserver(function() {
+            var fnField = iframeDoc.querySelector('input[name="FirstName"]');
+            var lnField = iframeDoc.querySelector('input[name="LastName"]');
+            var emField = iframeDoc.querySelector('input[name="Email"]');
+            var submitBtn = iframeDoc.querySelector('button[type="submit"]');
+
+            if (submitBtn && !submitBtn.dataset.hooked) {
+              submitBtn.dataset.hooked = 'true';
+
+              var saved = localStorage.getItem(ESW_STORAGE_KEY);
+              if (saved) {
+                var fields = JSON.parse(saved);
+                if (fnField && fields.firstName) {
+                  fnField.value = fields.firstName;
+                  fnField.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+                if (lnField && fields.lastName) {
+                  lnField.value = fields.lastName;
+                  lnField.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+                if (emField && fields.email) {
+                  emField.value = fields.email;
+                  emField.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+              }
+
+              submitBtn.addEventListener('click', function() {
+                var data = {
+                  firstName : fnField ? fnField.value : '',
+                  lastName  : lnField ? lnField.value : '',
+                  email     : emField ? emField.value : ''
+                };
+                if (data.firstName || data.lastName || data.email) {
+                  localStorage.setItem(ESW_STORAGE_KEY, JSON.stringify(data));
+                }
+              });
+
+              observer.disconnect();
+            }
+          });
+          observer.observe(iframeDoc.body, { childList: true, subtree: true });
+        } catch(e) {
+          console.warn('ESW error:', e);
+        }
+      });
+    }
+
+    function initEmbeddedMessaging() {
+      try {
+        embeddedservice_bootstrap.settings.language = 'en_US';
+        window.addEventListener('onEmbeddedMessagingReady', function() {
+          waitForPrechatForm();
+        });
+        embeddedservice_bootstrap.init(
+          '00DVE000009G9YP',
+          'Julienne_edu',
+          'https://escoffier--uat.sandbox.my.site.com/ESWJulienneedu1777220225846',
+          {
+            scrt2URL: 'https://escoffier--uat.sandbox.my.salesforce-scrt.com'
+          }
+        );
+      } catch (err) {
+        console.error('Error loading Embedded Messaging: ', err);
+      }
+    };
+
+  </script>
+  <script type='text/javascript'
+    src='https://escoffier--uat.sandbox.my.site.com/ESWJulienneedu1777220225846/assets/js/bootstrap.min.js'
+    onload='initEmbeddedMessaging()'>
+  </script>
+
+</body>
+</html>
