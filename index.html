@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
-    />
+    >
 
     <title>Salesforce Pre-Chat Test</title>
 
@@ -51,8 +52,7 @@
         <h1>Embedded Messaging Test Page</h1>
 
         <p>
-            Open the chat, enter your first name, and start the
-            conversation.
+            Open the chat, enter your first name, and start the conversation.
         </p>
 
         <div class="status">
@@ -82,49 +82,101 @@
             const storedFirstName =
                 localStorage.getItem(CHAT_FIRST_NAME_KEY);
 
-            document.getElementById(
-                'storedFirstName'
-            ).textContent = storedFirstName || 'None';
+            const displayElement =
+                document.getElementById('storedFirstName');
+
+            if (displayElement) {
+                displayElement.textContent =
+                    storedFirstName || 'None';
+            }
+
+            console.log(
+                'Current stored first name:',
+                storedFirstName
+            );
         }
 
         function clearStoredFirstName() {
             localStorage.removeItem(CHAT_FIRST_NAME_KEY);
+
             showStoredFirstName();
+
+            console.log('Stored first name cleared.');
         }
 
         window.addEventListener('message', function (event) {
             console.log(
-                'Message received:',
+                'Message received by GitHub page:',
                 event.origin,
                 event.data
             );
 
             if (
                 !event.data ||
-                event.data.type !== 'SAVE_CHAT_FIRST_NAME'
+                typeof event.data.type !== 'string'
             ) {
                 return;
             }
 
-            const firstName = String(
-                event.data.firstName || ''
-            ).trim();
+            if (
+                event.data.type ===
+                'SAVE_CHAT_FIRST_NAME'
+            ) {
+                const firstName = String(
+                    event.data.firstName || ''
+                ).trim();
 
-            if (!firstName) {
+                if (!firstName) {
+                    console.warn(
+                        'SAVE_CHAT_FIRST_NAME received with an empty value.'
+                    );
+                    return;
+                }
+
+                localStorage.setItem(
+                    CHAT_FIRST_NAME_KEY,
+                    firstName
+                );
+
+                console.log(
+                    'First name saved to localStorage:',
+                    firstName
+                );
+
+                showStoredFirstName();
+
                 return;
             }
 
-            localStorage.setItem(
-                CHAT_FIRST_NAME_KEY,
-                firstName
-            );
+            if (
+                event.data.type ===
+                'REQUEST_CHAT_FIRST_NAME'
+            ) {
+                const storedFirstName =
+                    localStorage.getItem(
+                        CHAT_FIRST_NAME_KEY
+                    ) || '';
 
-            console.log(
-                'First name saved:',
-                firstName
-            );
+                if (!event.source) {
+                    console.warn(
+                        'Unable to respond because event.source is unavailable.'
+                    );
+                    return;
+                }
 
-            showStoredFirstName();
+                event.source.postMessage(
+                    {
+                        type: 'CHAT_FIRST_NAME_RESPONSE',
+                        firstName: storedFirstName
+                    },
+                    '*'
+                );
+
+                console.log(
+                    'Stored first name sent back to pre-chat:',
+                    storedFirstName
+                );
+            }
         });
 
         function initEmbeddedMessaging() {
