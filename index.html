@@ -80,16 +80,19 @@
         const CHAT_FIRST_NAME_KEY = 'chat_first_name';
 
         /*
-         * Displays the current value saved in this
-         * GitHub Pages site's localStorage.
+         * Display the current value stored on the GitHub Pages domain.
          */
         function showStoredFirstName() {
             const storedFirstName =
                 localStorage.getItem(CHAT_FIRST_NAME_KEY);
 
-            document.getElementById(
-                'storedFirstName'
-            ).textContent = storedFirstName || 'None';
+            const displayElement =
+                document.getElementById('storedFirstName');
+
+            if (displayElement) {
+                displayElement.textContent =
+                    storedFirstName || 'None';
+            }
 
             console.log(
                 'Current stored first name:',
@@ -98,7 +101,7 @@
         }
 
         /*
-         * Clears the saved name for another first-visit test.
+         * Clear the stored value so you can test as a new visitor.
          */
         function clearStoredFirstName() {
             localStorage.removeItem(CHAT_FIRST_NAME_KEY);
@@ -109,16 +112,15 @@
         }
 
         /*
-         * Receives First Name from the custom
-         * Salesforce pre-chat LWC.
+         * Receive First Name from the custom pre-chat LWC.
+         *
+         * The LWC sends the message using window.top.postMessage().
          */
         window.addEventListener('message', function (event) {
             console.log(
-                'Message received from Salesforce:',
-                {
-                    origin: event.origin,
-                    data: event.data
-                }
+                'Message received by GitHub page:',
+                event.origin,
+                event.data
             );
 
             if (
@@ -134,9 +136,8 @@
 
             if (!firstName) {
                 console.warn(
-                    'First Name message was received, but the value was empty.'
+                    'SAVE_CHAT_FIRST_NAME received with no value.'
                 );
-
                 return;
             }
 
@@ -154,21 +155,24 @@
         });
 
         /*
-         * Runs when Salesforce Embedded Messaging is ready.
+         * Salesforce fires this event when its messaging APIs
+         * are ready.
          *
-         * If a First Name was saved during an earlier chat,
-         * pass it into the visible pre-chat field.
+         * Read the name from the website's localStorage and pass it
+         * into the configured visible First Name pre-chat field.
          */
         window.addEventListener(
             'onEmbeddedMessagingReady',
             function () {
+                console.log('Embedded Messaging API is ready.');
+
                 const storedFirstName =
                     localStorage.getItem(
                         CHAT_FIRST_NAME_KEY
                     );
 
                 console.log(
-                    'Embedded Messaging ready. Stored first name:',
+                    'Stored First Name found:',
                     storedFirstName
                 );
 
@@ -177,6 +181,16 @@
                 }
 
                 try {
+                    if (
+                        !window.embeddedservice_bootstrap ||
+                        !embeddedservice_bootstrap.prechatAPI
+                    ) {
+                        console.warn(
+                            'Salesforce prechatAPI is unavailable.'
+                        );
+                        return;
+                    }
+
                     embeddedservice_bootstrap
                         .prechatAPI
                         .setVisiblePrechatFields({
@@ -187,12 +201,12 @@
                         });
 
                     console.log(
-                        'First name passed to Salesforce pre-chat:',
+                        'First Name passed to Salesforce pre-chat:',
                         storedFirstName
                     );
                 } catch (error) {
                     console.error(
-                        'Unable to prefill First Name:',
+                        'Unable to populate First Name:',
                         error
                     );
                 }
@@ -224,6 +238,9 @@
             }
         }
 
+        /*
+         * Show the stored value after the webpage finishes loading.
+         */
         document.addEventListener(
             'DOMContentLoaded',
             showStoredFirstName
