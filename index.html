@@ -1,186 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8" />
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    />
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    />
 
-    <title>Salesforce Pre-Chat Test</title>
+    <title>Salesforce Pre-Chat Test</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 40px;
-            background: #f4f6f9;
-        }
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            font-family: Arial, sans-serif;
+            background: #F4F6F9;
+        }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 32px;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
-        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 32px;
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+        }
 
-        h1 {
-            margin-top: 0;
-        }
+        h1 {
+            margin-top: 0;
+        }
 
-        .status {
-            margin-top: 20px;
-            padding: 12px;
-            background: #eef4ff;
-            border-radius: 6px;
-        }
+        .status {
+            margin-top: 20px;
+            padding: 12px;
+            background: #EEF4FF;
+            border-radius: 6px;
+        }
 
-        button {
-            margin-top: 12px;
-            margin-right: 8px;
-            padding: 10px 16px;
-            cursor: pointer;
-        }
-    </style>
+        button {
+            margin-top: 12px;
+            margin-right: 8px;
+            padding: 10px 16px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Embedded Messaging Test Page</h1>
+    <div class="container">
+        <h1>Embedded Messaging Test Page</h1>
 
-        <p>
-            Open the Salesforce chat, enter your first name,
-            and click Start Chat.
-        </p>
+        <p>
+            Open the chat, enter your first name, and start the
+            conversation.
+        </p>
 
-        <div class="status">
-            Stored first name:
-            <strong id="storedFirstName">None</strong>
-        </div>
+        <div class="status">
+            Stored first name:
+            <strong id="storedFirstName">None</strong>
+        </div>
 
-        <button
-            type="button"
-            onclick="showStoredFirstName()">
-            Refresh Stored Value
-        </button>
+        <button
+            type="button"
+            onclick="showStoredFirstName()"
+        >
+            Refresh Stored Value
+        </button>
 
-        <button
-            type="button"
-            onclick="clearStoredFirstName()">
-            Clear Stored Value
-        </button>
-    </div>
+        <button
+            type="button"
+            onclick="clearStoredFirstName()"
+        >
+            Clear Stored Value
+        </button>
+    </div>
 
-    <script type="text/javascript">
-        const CHAT_FIRST_NAME_KEY = 'chat_first_name';
+    <script type="text/javascript">
+        const CHAT_FIRST_NAME_KEY = 'chat_first_name';
 
-        function showStoredFirstName() {
-            const storedFirstName =
-                localStorage.getItem(CHAT_FIRST_NAME_KEY);
+        /*
+         * Displays the current value saved in this
+         * GitHub Pages site's localStorage.
+         */
+        function showStoredFirstName() {
+            const storedFirstName =
+                localStorage.getItem(CHAT_FIRST_NAME_KEY);
 
-            document.getElementById(
-                'storedFirstName'
-            ).textContent = storedFirstName || 'None';
+            document.getElementById(
+                'storedFirstName'
+            ).textContent = storedFirstName || 'None';
 
-            console.log(
-                'Current stored first name:',
-                storedFirstName
-            );
-        }
+            console.log(
+                'Current stored first name:',
+                storedFirstName
+            );
+        }
 
-        function clearStoredFirstName() {
-            localStorage.removeItem(CHAT_FIRST_NAME_KEY);
+        /*
+         * Clears the saved name for another first-visit test.
+         */
+        function clearStoredFirstName() {
+            localStorage.removeItem(CHAT_FIRST_NAME_KEY);
 
-            showStoredFirstName();
+            showStoredFirstName();
 
-            console.log('Stored first name cleared.');
-        }
+            console.log('Stored first name cleared.');
+        }
 
-        /*
-         * Receives the message sent by the custom
-         * Salesforce pre-chat LWC.
-         */
-        window.addEventListener(
-            'message',
-            function (event) {
-                console.log(
-                    'Message event received:',
-                    {
-                        origin: event.origin,
-                        data: event.data
-                    }
-                );
+        /*
+         * Receives First Name from the custom
+         * Salesforce pre-chat LWC.
+         */
+        window.addEventListener('message', function (event) {
+            console.log(
+                'Message received from Salesforce:',
+                {
+                    origin: event.origin,
+                    data: event.data
+                }
+            );
 
-                if (
-                    !event.data ||
-                    event.data.type !==
-                        'SAVE_CHAT_FIRST_NAME'
-                ) {
-                    return;
-                }
+            if (
+                !event.data ||
+                event.data.type !== 'SAVE_CHAT_FIRST_NAME'
+            ) {
+                return;
+            }
 
-                const firstName = String(
-                    event.data.firstName || ''
-                ).trim();
+            const firstName = String(
+                event.data.firstName || ''
+            ).trim();
 
-                if (!firstName) {
-                    console.warn(
-                        'SAVE_CHAT_FIRST_NAME was received, ' +
-                        'but First Name was empty.'
-                    );
+            if (!firstName) {
+                console.warn(
+                    'First Name message was received, but the value was empty.'
+                );
 
-                    return;
-                }
+                return;
+            }
 
-                localStorage.setItem(
-                    CHAT_FIRST_NAME_KEY,
-                    firstName
-                );
+            localStorage.setItem(
+                CHAT_FIRST_NAME_KEY,
+                firstName
+            );
 
-                console.log(
-                    'First name saved to localStorage:',
-                    firstName
-                );
+            console.log(
+                'First name saved to localStorage:',
+                firstName
+            );
 
-                showStoredFirstName();
-            }
-        );
+            showStoredFirstName();
+        });
 
-        function initEmbeddedMessaging() {
-            try {
-                embeddedservice_bootstrap.settings.language =
-                    'en_US';
+        /*
+         * Runs when Salesforce Embedded Messaging is ready.
+         *
+         * If a First Name was saved during an earlier chat,
+         * pass it into the visible pre-chat field.
+         */
+        window.addEventListener(
+            'onEmbeddedMessagingReady',
+            function () {
+                const storedFirstName =
+                    localStorage.getItem(
+                        CHAT_FIRST_NAME_KEY
+                    );
 
-                embeddedservice_bootstrap.init(
-                    '00DVE000009G9YP',
-                    'NitinTest',
-                    'https://escoffier--uat.sandbox.my.site.com/ESWNitinTest1785021925679',
-                    {
-                        scrt2URL:
-                            'https://escoffier--uat.sandbox.my.salesforce-scrt.com'
-                    }
-                );
-            } catch (err) {
-                console.error(
-                    'Error loading Embedded Messaging:',
-                    err
-                );
-            }
-        }
+                console.log(
+                    'Embedded Messaging ready. Stored first name:',
+                    storedFirstName
+                );
 
-        document.addEventListener(
-            'DOMContentLoaded',
-            showStoredFirstName
-        );
-    </script>
+                if (!storedFirstName) {
+                    return;
+                }
 
-    <script
-        type="text/javascript"
-        src="https://escoffier--uat.sandbox.my.site.com/ESWNitinTest1785021925679/assets/js/bootstrap.min.js"
-        onload="initEmbeddedMessaging()">
-    </script>
+                try {
+                    embeddedservice_bootstrap
+                        .prechatAPI
+                        .setVisiblePrechatFields({
+                            _firstName: {
+                                value: storedFirstName,
+                                isEditableByEndUser: true
+                            }
+                        });
+
+                    console.log(
+                        'First name passed to Salesforce pre-chat:',
+                        storedFirstName
+                    );
+                } catch (error) {
+                    console.error(
+                        'Unable to prefill First Name:',
+                        error
+                    );
+                }
+            }
+        );
+
+        /*
+         * Salesforce-generated initialization.
+         */
+        function initEmbeddedMessaging() {
+            try {
+                embeddedservice_bootstrap.settings.language =
+                    'en_US';
+
+                embeddedservice_bootstrap.init(
+                    '00DVE000009G9YP',
+                    'NitinTest',
+                    'https://escoffier--uat.sandbox.my.site.com/ESWNitinTest1785021925679',
+                    {
+                        scrt2URL:
+                            'https://escoffier--uat.sandbox.my.salesforce-scrt.com'
+                    }
+                );
+            } catch (error) {
+                console.error(
+                    'Error loading Embedded Messaging:',
+                    error
+                );
+            }
+        }
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            showStoredFirstName
+        );
+    </script>
+
+    <script
+        type="text/javascript"
+        src="https://escoffier--uat.sandbox.my.site.com/ESWNitinTest1785021925679/assets/js/bootstrap.min.js"
+        onload="initEmbeddedMessaging()">
+    </script>
 </body>
 </html>
