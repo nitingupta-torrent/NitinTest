@@ -8,151 +8,16 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Salesforce Pre-Chat Test</title>
-
-    <style>
-        body {
-            margin: 0;
-            padding: 40px;
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 32px;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            margin-top: 0;
-        }
-
-        .status {
-            margin-top: 20px;
-            padding: 12px;
-            background: #eef4ff;
-            border-radius: 6px;
-            line-height: 1.8;
-        }
-
-        button {
-            margin-top: 12px;
-            margin-right: 8px;
-            padding: 10px 16px;
-            cursor: pointer;
-        }
-    </style>
+    <title>Chat</title>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Embedded Messaging Test Page</h1>
-
-        <p>
-            Open the chat, enter your name and email, and start the conversation.
-        </p>
-
-        <div class="status">
-            <div>
-                Stored first name:
-                <strong id="storedFirstName">None</strong>
-            </div>
-
-            <div>
-                Stored last name:
-                <strong id="storedLastName">None</strong>
-            </div>
-
-            <div>
-                Stored email:
-                <strong id="storedEmail">None</strong>
-            </div>
-        </div>
-
-        <button
-            type="button"
-            onclick="showStoredCustomerInfo()"
-        >
-            Refresh Stored Values
-        </button>
-
-        <button
-            type="button"
-            onclick="clearStoredCustomerInfo()"
-        >
-            Clear Stored Values
-        </button>
-    </div>
-
     <script type="text/javascript">
         const CHAT_FIRST_NAME_KEY = 'chat_first_name';
         const CHAT_LAST_NAME_KEY = 'chat_last_name';
         const CHAT_EMAIL_KEY = 'chat_email';
 
-        function showStoredCustomerInfo() {
-            const firstName =
-                localStorage.getItem(CHAT_FIRST_NAME_KEY);
-
-            const lastName =
-                localStorage.getItem(CHAT_LAST_NAME_KEY);
-
-            const email =
-                localStorage.getItem(CHAT_EMAIL_KEY);
-
-            const firstNameElement =
-                document.getElementById('storedFirstName');
-
-            const lastNameElement =
-                document.getElementById('storedLastName');
-
-            const emailElement =
-                document.getElementById('storedEmail');
-
-            if (firstNameElement) {
-                firstNameElement.textContent =
-                    firstName || 'None';
-            }
-
-            if (lastNameElement) {
-                lastNameElement.textContent =
-                    lastName || 'None';
-            }
-
-            if (emailElement) {
-                emailElement.textContent =
-                    email || 'None';
-            }
-
-            console.log('Stored customer information:', {
-                firstName,
-                lastName,
-                email
-            });
-        }
-
-        function clearStoredCustomerInfo() {
-            localStorage.removeItem(CHAT_FIRST_NAME_KEY);
-            localStorage.removeItem(CHAT_LAST_NAME_KEY);
-            localStorage.removeItem(CHAT_EMAIL_KEY);
-
-            showStoredCustomerInfo();
-
-            console.log(
-                'Stored customer information cleared.'
-            );
-        }
-
         window.addEventListener('message', function (event) {
-            console.log(
-                'Message received by GitHub page:',
-                event.origin,
-                event.data
-            );
-
             if (
                 !event.data ||
                 typeof event.data.type !== 'string'
@@ -160,9 +25,6 @@
                 return;
             }
 
-            /*
-             * Save values sent from the custom pre-chat LWC.
-             */
             if (
                 event.data.type ===
                 'SAVE_CHAT_CUSTOMER_INFO'
@@ -200,24 +62,9 @@
                     );
                 }
 
-                console.log(
-                    'Customer information saved to localStorage:',
-                    {
-                        firstName,
-                        lastName,
-                        email
-                    }
-                );
-
-                showStoredCustomerInfo();
-
                 return;
             }
 
-            /*
-             * The custom pre-chat LWC requests previously
-             * stored customer information when it loads.
-             */
             if (
                 event.data.type ===
                 'REQUEST_CHAT_CUSTOMER_INFO'
@@ -238,9 +85,6 @@
                     ) || '';
 
                 if (!event.source) {
-                    console.warn(
-                        'Unable to respond because event.source is unavailable.'
-                    );
                     return;
                 }
 
@@ -253,15 +97,6 @@
                         email
                     },
                     '*'
-                );
-
-                console.log(
-                    'Stored customer information sent back to pre-chat:',
-                    {
-                        firstName,
-                        lastName,
-                        email
-                    }
                 );
             }
         });
@@ -287,11 +122,6 @@
                 );
             }
         }
-
-        document.addEventListener(
-            'DOMContentLoaded',
-            showStoredCustomerInfo
-        );
     </script>
 
     <script
