@@ -36,6 +36,7 @@
             padding: 12px;
             background: #eef4ff;
             border-radius: 6px;
+            line-height: 1.8;
         }
 
         button {
@@ -52,56 +53,97 @@
         <h1>Embedded Messaging Test Page</h1>
 
         <p>
-            Open the chat, enter your first name, and start the conversation.
+            Open the chat, enter your name and email, and start the conversation.
         </p>
 
         <div class="status">
-            Stored first name:
-            <strong id="storedFirstName">None</strong>
+            <div>
+                Stored first name:
+                <strong id="storedFirstName">None</strong>
+            </div>
+
+            <div>
+                Stored last name:
+                <strong id="storedLastName">None</strong>
+            </div>
+
+            <div>
+                Stored email:
+                <strong id="storedEmail">None</strong>
+            </div>
         </div>
 
         <button
             type="button"
-            onclick="showStoredFirstName()"
+            onclick="showStoredCustomerInfo()"
         >
-            Refresh Stored Value
+            Refresh Stored Values
         </button>
 
         <button
             type="button"
-            onclick="clearStoredFirstName()"
+            onclick="clearStoredCustomerInfo()"
         >
-            Clear Stored Value
+            Clear Stored Values
         </button>
     </div>
 
     <script type="text/javascript">
         const CHAT_FIRST_NAME_KEY = 'chat_first_name';
+        const CHAT_LAST_NAME_KEY = 'chat_last_name';
+        const CHAT_EMAIL_KEY = 'chat_email';
 
-        function showStoredFirstName() {
-            const storedFirstName =
+        function showStoredCustomerInfo() {
+            const firstName =
                 localStorage.getItem(CHAT_FIRST_NAME_KEY);
 
-            const displayElement =
+            const lastName =
+                localStorage.getItem(CHAT_LAST_NAME_KEY);
+
+            const email =
+                localStorage.getItem(CHAT_EMAIL_KEY);
+
+            const firstNameElement =
                 document.getElementById('storedFirstName');
 
-            if (displayElement) {
-                displayElement.textContent =
-                    storedFirstName || 'None';
+            const lastNameElement =
+                document.getElementById('storedLastName');
+
+            const emailElement =
+                document.getElementById('storedEmail');
+
+            if (firstNameElement) {
+                firstNameElement.textContent =
+                    firstName || 'None';
             }
 
-            console.log(
-                'Current stored first name:',
-                storedFirstName
-            );
+            if (lastNameElement) {
+                lastNameElement.textContent =
+                    lastName || 'None';
+            }
+
+            if (emailElement) {
+                emailElement.textContent =
+                    email || 'None';
+            }
+
+            console.log('Stored customer information:', {
+                firstName,
+                lastName,
+                email
+            });
         }
 
-        function clearStoredFirstName() {
+        function clearStoredCustomerInfo() {
             localStorage.removeItem(CHAT_FIRST_NAME_KEY);
+            localStorage.removeItem(CHAT_LAST_NAME_KEY);
+            localStorage.removeItem(CHAT_EMAIL_KEY);
 
-            showStoredFirstName();
+            showStoredCustomerInfo();
 
-            console.log('Stored first name cleared.');
+            console.log(
+                'Stored customer information cleared.'
+            );
         }
 
         window.addEventListener('message', function (event) {
@@ -118,43 +160,81 @@
                 return;
             }
 
+            /*
+             * Save values sent from the custom pre-chat LWC.
+             */
             if (
                 event.data.type ===
-                'SAVE_CHAT_FIRST_NAME'
+                'SAVE_CHAT_CUSTOMER_INFO'
             ) {
                 const firstName = String(
                     event.data.firstName || ''
                 ).trim();
 
-                if (!firstName) {
-                    console.warn(
-                        'SAVE_CHAT_FIRST_NAME received with an empty value.'
+                const lastName = String(
+                    event.data.lastName || ''
+                ).trim();
+
+                const email = String(
+                    event.data.email || ''
+                ).trim();
+
+                if (firstName) {
+                    localStorage.setItem(
+                        CHAT_FIRST_NAME_KEY,
+                        firstName
                     );
-                    return;
                 }
 
-                localStorage.setItem(
-                    CHAT_FIRST_NAME_KEY,
-                    firstName
-                );
+                if (lastName) {
+                    localStorage.setItem(
+                        CHAT_LAST_NAME_KEY,
+                        lastName
+                    );
+                }
+
+                if (email) {
+                    localStorage.setItem(
+                        CHAT_EMAIL_KEY,
+                        email
+                    );
+                }
 
                 console.log(
-                    'First name saved to localStorage:',
-                    firstName
+                    'Customer information saved to localStorage:',
+                    {
+                        firstName,
+                        lastName,
+                        email
+                    }
                 );
 
-                showStoredFirstName();
+                showStoredCustomerInfo();
 
                 return;
             }
 
+            /*
+             * The custom pre-chat LWC requests previously
+             * stored customer information when it loads.
+             */
             if (
                 event.data.type ===
-                'REQUEST_CHAT_FIRST_NAME'
+                'REQUEST_CHAT_CUSTOMER_INFO'
             ) {
-                const storedFirstName =
+                const firstName =
                     localStorage.getItem(
                         CHAT_FIRST_NAME_KEY
+                    ) || '';
+
+                const lastName =
+                    localStorage.getItem(
+                        CHAT_LAST_NAME_KEY
+                    ) || '';
+
+                const email =
+                    localStorage.getItem(
+                        CHAT_EMAIL_KEY
                     ) || '';
 
                 if (!event.source) {
@@ -166,15 +246,22 @@
 
                 event.source.postMessage(
                     {
-                        type: 'CHAT_FIRST_NAME_RESPONSE',
-                        firstName: storedFirstName
+                        type:
+                            'CHAT_CUSTOMER_INFO_RESPONSE',
+                        firstName,
+                        lastName,
+                        email
                     },
                     '*'
                 );
 
                 console.log(
-                    'Stored first name sent back to pre-chat:',
-                    storedFirstName
+                    'Stored customer information sent back to pre-chat:',
+                    {
+                        firstName,
+                        lastName,
+                        email
+                    }
                 );
             }
         });
@@ -203,7 +290,7 @@
 
         document.addEventListener(
             'DOMContentLoaded',
-            showStoredFirstName
+            showStoredCustomerInfo
         );
     </script>
 
