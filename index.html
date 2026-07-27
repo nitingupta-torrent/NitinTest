@@ -3,19 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Julienne EDU Chat</title>
-
+    <title>Julienne Education Chat Test</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
         body {
             margin: 0;
-            min-height: 100vh;
-            font-family: Arial, Helvetica, sans-serif;
-            color: #181818;
+            font-family: Arial, sans-serif;
             background: #f5f5f5;
         }
 
@@ -24,12 +16,11 @@
             align-items: center;
             min-height: 76px;
             padding: 12px 24px;
-            background: #ffffff;
-            border-bottom: 1px solid #dddddd;
+            background: #fff;
+            border-bottom: 1px solid #ddd;
         }
 
         .page-header img {
-            display: block;
             max-width: 220px;
             max-height: 64px;
             object-fit: contain;
@@ -40,162 +31,94 @@
             text-align: center;
         }
 
-        .page-content h1 {
-            margin: 0 0 12px;
-        }
-
-        .page-content p {
-            margin: 0;
-            color: #444444;
+        #status {
+            display: inline-block;
+            max-width: 760px;
+            margin-top: 18px;
+            padding: 12px 16px;
+            text-align: left;
+            white-space: pre-wrap;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
         }
     </style>
 </head>
-
 <body>
     <header class="page-header">
         <img
             src="https://escoffier--uat.sandbox.my.site.com/resource/1784905312000/ChatLogoNew"
             alt="Auguste Escoffier School of Culinary Arts"
-            onerror="handleLogoError(this)"
+            onerror="this.onerror=null;this.src='https://escoffier--uat.sandbox.my.site.com/resource/ChatLogoNew';"
         >
     </header>
 
     <main class="page-content">
-        <h1>Welcome</h1>
-        <p>Use the chat button in the bottom-right corner to contact us.</p>
+        <h1>Embedded Messaging Test</h1>
+        <p>The chat launcher should appear in the lower-right corner.</p>
+        <div id="status">Loading Salesforce Embedded Messaging…</div>
     </main>
 
     <script>
-        "use strict";
+        const statusBox = document.getElementById("status");
 
-        /*
-         * These message names must remain identical to the values used by the
-         * fsc_customerPreChatForm LWC.
-         */
+        function setStatus(message) {
+            statusBox.textContent += "\n" + message;
+            console.log(message);
+        }
+
+        window.addEventListener("error", function (event) {
+            setStatus("Browser error: " + (event.message || "Unknown error"));
+        });
+
+        window.addEventListener("unhandledrejection", function (event) {
+            setStatus("Unhandled promise rejection: " + String(event.reason));
+        });
+
+
+        // Customer-data bridge for the custom pre-chat LWC.
+        // This adds Phone support while keeping the previously working page unchanged.
+        const CUSTOMER_STORAGE_KEY = "fsc_chatCustomerInfo";
         const REQUEST_CUSTOMER_INFO = "REQUEST_CHAT_CUSTOMER_INFO";
         const CUSTOMER_INFO_RESPONSE = "CHAT_CUSTOMER_INFO_RESPONSE";
         const SAVE_CUSTOMER_INFO = "SAVE_CHAT_CUSTOMER_INFO";
 
-        const CUSTOMER_INFO_STORAGE_KEY = "fsc_chatCustomerInfo";
-        const TERMS_URL = "https://escoffierglobal.com/terms/";
-
-        /*
-         * Only messages from this page, Salesforce, or the Escoffier Salesforce
-         * sandbox are accepted. This prevents unrelated frames from reading or
-         * overwriting stored customer information.
-         */
-        function isAllowedMessageOrigin(origin) {
-            if (!origin || origin === "null") {
-                return false;
-            }
-
-            const allowedOrigins = [
-                window.location.origin,
-                "https://escoffier--uat.sandbox.my.site.com",
-                "https://escoffier--uat.sandbox.my.salesforce.com",
-                "https://escoffier--uat.sandbox.lightning.force.com"
-            ];
-
-            if (allowedOrigins.includes(origin)) {
-                return true;
-            }
-
-            try {
-                const hostname = new URL(origin).hostname.toLowerCase();
-
-                return (
-                    hostname.endsWith(".salesforce.com") ||
-                    hostname.endsWith(".force.com") ||
-                    hostname.endsWith(".site.com") ||
-                    hostname.endsWith(".salesforce-sites.com")
-                );
-            } catch (error) {
-                return false;
-            }
-        }
-
-        function normalizeCustomerInfo(value) {
-            const source = value && typeof value === "object" ? value : {};
-
-            return {
-                firstName: String(source.firstName || "").trim(),
-                lastName: String(source.lastName || "").trim(),
-                email: String(source.email || "").trim(),
-                phone: String(source.phone || "").trim(),
-                termsAccepted: source.termsAccepted === true,
-                termsUrl: String(source.termsUrl || TERMS_URL),
-                termsAcceptedAt: String(source.termsAcceptedAt || "")
-            };
-        }
-
         function getStoredCustomerInfo() {
             try {
-                const storedValue = localStorage.getItem(
-                    CUSTOMER_INFO_STORAGE_KEY
-                );
+                const storedValue = window.localStorage.getItem(CUSTOMER_STORAGE_KEY);
+                const customerInfo = storedValue ? JSON.parse(storedValue) : {};
 
-                if (!storedValue) {
-                    return normalizeCustomerInfo({});
-                }
-
-                return normalizeCustomerInfo(JSON.parse(storedValue));
+                return {
+                    firstName: String(customerInfo.firstName || "").trim(),
+                    lastName: String(customerInfo.lastName || "").trim(),
+                    email: String(customerInfo.email || "").trim(),
+                    phone: String(customerInfo.phone || "").trim()
+                };
             } catch (error) {
-                console.error(
-                    "Unable to read stored chat customer information:",
-                    error
-                );
-                return normalizeCustomerInfo({});
+                console.error("Unable to read saved chat information:", error);
+                return { firstName: "", lastName: "", email: "", phone: "" };
             }
         }
 
         function saveCustomerInfo(messageData) {
-            const customerInfo = normalizeCustomerInfo({
-                firstName: messageData.firstName,
-                lastName: messageData.lastName,
-                email: messageData.email,
-                phone: messageData.phone,
-                termsAccepted: messageData.termsAccepted,
-                termsUrl: messageData.termsUrl || TERMS_URL,
-                termsAcceptedAt: messageData.termsAcceptedAt
-            });
+            const customerInfo = {
+                firstName: String(messageData.firstName || "").trim(),
+                lastName: String(messageData.lastName || "").trim(),
+                email: String(messageData.email || "").trim(),
+                phone: String(messageData.phone || "").trim()
+            };
 
             try {
-                localStorage.setItem(
-                    CUSTOMER_INFO_STORAGE_KEY,
+                window.localStorage.setItem(
+                    CUSTOMER_STORAGE_KEY,
                     JSON.stringify(customerInfo)
                 );
             } catch (error) {
-                console.error(
-                    "Unable to save chat customer information:",
-                    error
-                );
+                console.error("Unable to save chat information:", error);
             }
-        }
-
-        function sendCustomerInfo(targetWindow, targetOrigin) {
-            if (!targetWindow || typeof targetWindow.postMessage !== "function") {
-                return;
-            }
-
-            const customerInfo = getStoredCustomerInfo();
-
-            targetWindow.postMessage(
-                {
-                    type: CUSTOMER_INFO_RESPONSE,
-                    firstName: customerInfo.firstName,
-                    lastName: customerInfo.lastName,
-                    email: customerInfo.email,
-                    phone: customerInfo.phone
-                },
-                targetOrigin
-            );
         }
 
         window.addEventListener("message", function (event) {
-            if (!isAllowedMessageOrigin(event.origin)) {
-                return;
-            }
-
             const messageData = event.data;
 
             if (!messageData || typeof messageData !== "object") {
@@ -203,7 +126,20 @@
             }
 
             if (messageData.type === REQUEST_CUSTOMER_INFO) {
-                sendCustomerInfo(event.source, event.origin);
+                const customerInfo = getStoredCustomerInfo();
+
+                if (event.source && typeof event.source.postMessage === "function") {
+                    event.source.postMessage(
+                        {
+                            type: CUSTOMER_INFO_RESPONSE,
+                            firstName: customerInfo.firstName,
+                            lastName: customerInfo.lastName,
+                            email: customerInfo.email,
+                            phone: customerInfo.phone
+                        },
+                        "*"
+                    );
+                }
                 return;
             }
 
@@ -212,20 +148,9 @@
             }
         });
 
-        function handleLogoError(image) {
-            console.error(
-                "Salesforce Static Resource logo failed to load:",
-                image.src
-            );
-
-            if (!image.dataset.retried) {
-                image.dataset.retried = "true";
-                image.src =
-                    "https://escoffier--uat.sandbox.my.site.com/resource/ChatLogoNew";
-            }
-        }
-
         window.addEventListener("onEmbeddedMessagingReady", function () {
+            setStatus("Salesforce event received: onEmbeddedMessagingReady");
+
             try {
                 if (
                     window.embeddedservice_bootstrap &&
@@ -233,15 +158,17 @@
                     typeof embeddedservice_bootstrap.utilAPI.showChatButton === "function"
                 ) {
                     embeddedservice_bootstrap.utilAPI.showChatButton();
-                    console.log("Embedded Messaging chat button requested.");
+                    setStatus("Requested Salesforce to show the chat button.");
                 }
             } catch (error) {
-                console.error("Unable to show Embedded Messaging chat button:", error);
+                setStatus("Could not request chat-button visibility: " + error.message);
             }
         });
 
         function initEmbeddedMessaging() {
             try {
+                setStatus("bootstrap.min.js loaded successfully.");
+
                 embeddedservice_bootstrap.settings.language = "en_US";
 
                 embeddedservice_bootstrap.init(
@@ -253,12 +180,18 @@
                             "https://escoffier--uat.sandbox.my.salesforce-scrt.com"
                     }
                 );
+
+                setStatus("embeddedservice_bootstrap.init() was called.");
             } catch (error) {
-                console.error(
-                    "Error loading Embedded Messaging:",
-                    error
-                );
+                setStatus("Initialization error: " + error.message);
+                console.error("Error loading Embedded Messaging:", error);
             }
+        }
+
+        function bootstrapLoadFailed() {
+            setStatus(
+                "bootstrap.min.js failed to load. Check the browser Console, CORS, CSP, deployment status, and URL."
+            );
         }
     </script>
 
@@ -266,7 +199,7 @@
         type="text/javascript"
         src="https://escoffier--uat.sandbox.my.site.com/ESWJulienneedu1777220225846/assets/js/bootstrap.min.js"
         onload="initEmbeddedMessaging()"
-        onerror="console.error('Embedded Messaging bootstrap failed to load.')">
+        onerror="bootstrapLoadFailed()">
     </script>
 </body>
 </html>
