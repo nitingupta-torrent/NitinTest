@@ -225,6 +225,21 @@
             }
         }
 
+        window.addEventListener("onEmbeddedMessagingReady", function () {
+            try {
+                if (
+                    window.embeddedservice_bootstrap &&
+                    embeddedservice_bootstrap.utilAPI &&
+                    typeof embeddedservice_bootstrap.utilAPI.showChatButton === "function"
+                ) {
+                    embeddedservice_bootstrap.utilAPI.showChatButton();
+                    console.log("Embedded Messaging chat button requested.");
+                }
+            } catch (error) {
+                console.error("Unable to show Embedded Messaging chat button:", error);
+            }
+        });
+
         function initEmbeddedMessaging() {
             try {
                 embeddedservice_bootstrap.settings.language = "en_US";
