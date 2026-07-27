@@ -1,9 +1,78 @@
+
+
+
+
+
+
+
+
+
+
+
+image(15).png
+Help me step by step
+
+image(16).png
+
+image(17).png
+
+image(18).png
+Wr
+
+image(19).png
+
+Edit
+
+
+Edit
+
+
+Edit
+
+
+Edit
+
+
+This output means the JavaScript file loaded, but Salesforce never fired onEmbeddedMessagingReady. The most likely reason is that the HTML is still using the old deployment values:
+
+"Julienne_edu"
+"https://escoffier--uat.sandbox.my.site.com/ESWJulienneedu1777220225846"
+You created a new Embedded Service Deployment, so its API name and generated URLs are likely different.
+
+Next step
+Open:
+
+Setup → Embedded Service Deployments → your new deployment → Code Snippet
+
+Copy the complete generated snippet and paste it here.
+
+I will put those exact new values into the previously working HTML and add only Phone. Do not change anything else yet.
+
+
+Can you please just have the plain page like what we have on saturday aand update just phone 
+
+Worked for 59s
+Use this version. It is based on the plain Saturday page and changes only the customer-data bridge to include Phone.
+
+No Terms code
+
+No debug/status box
+
+No showChatButton() override
+
+Original Salesforce bootstrap values unchanged
+
+First Name, Last Name, Email, and Phone only
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Julienne Education Chat Test</title>
+
+    <title>Julienne Education Chat</title>
+
     <style>
         body {
             margin: 0;
@@ -14,15 +83,14 @@
         .page-header {
             display: flex;
             align-items: center;
-            min-height: 76px;
-            padding: 12px 24px;
-            background: #fff;
-            border-bottom: 1px solid #ddd;
+            padding: 16px 24px;
+            background: #ffffff;
+            border-bottom: 1px solid #dddddd;
         }
 
         .page-header img {
             max-width: 220px;
-            max-height: 64px;
+            max-height: 70px;
             object-fit: contain;
         }
 
@@ -30,54 +98,38 @@
             padding: 40px 24px;
             text-align: center;
         }
-
-        #status {
-            display: inline-block;
-            max-width: 760px;
-            margin-top: 18px;
-            padding: 12px 16px;
-            text-align: left;
-            white-space: pre-wrap;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-        }
     </style>
 </head>
+
 <body>
+
     <header class="page-header">
         <img
             src="https://escoffier--uat.sandbox.my.site.com/resource/1784905312000/ChatLogoNew"
             alt="Auguste Escoffier School of Culinary Arts"
-            onerror="this.onerror=null;this.src='https://escoffier--uat.sandbox.my.site.com/resource/ChatLogoNew';"
+            onerror="handleLogoError(this)"
         >
     </header>
 
     <main class="page-content">
-        <h1>Embedded Messaging Test</h1>
-        <p>The chat launcher should appear in the lower-right corner.</p>
-        <div id="status">Loading Salesforce Embedded Messaging…</div>
+        <h1>Welcome</h1>
+        <p>Use the chat button in the bottom-right corner to contact us.</p>
     </main>
 
     <script>
-        const statusBox = document.getElementById("status");
+        function handleLogoError(image) {
+            console.error("Salesforce Static Resource logo failed to load:", image.src);
 
-        function setStatus(message) {
-            statusBox.textContent += "\n" + message;
-            console.log(message);
+            if (!image.dataset.retried) {
+                image.dataset.retried = "true";
+                image.src =
+                    "https://escoffier--uat.sandbox.my.site.com/resource/ChatLogoNew";
+            }
         }
 
-        window.addEventListener("error", function (event) {
-            setStatus("Browser error: " + (event.message || "Unknown error"));
-        });
 
-        window.addEventListener("unhandledrejection", function (event) {
-            setStatus("Unhandled promise rejection: " + String(event.reason));
-        });
-
-
-        // Customer-data bridge for the custom pre-chat LWC.
-        // This adds Phone support while keeping the previously working page unchanged.
+        // Custom pre-chat localStorage bridge.
+        // Stores and returns First Name, Last Name, Email, and Phone.
         const CUSTOMER_STORAGE_KEY = "fsc_chatCustomerInfo";
         const REQUEST_CUSTOMER_INFO = "REQUEST_CHAT_CUSTOMER_INFO";
         const CUSTOMER_INFO_RESPONSE = "CHAT_CUSTOMER_INFO_RESPONSE";
@@ -96,7 +148,12 @@
                 };
             } catch (error) {
                 console.error("Unable to read saved chat information:", error);
-                return { firstName: "", lastName: "", email: "", phone: "" };
+                return {
+                    firstName: "",
+                    lastName: "",
+                    email: "",
+                    phone: ""
+                };
             }
         }
 
@@ -140,6 +197,7 @@
                         "*"
                     );
                 }
+
                 return;
             }
 
@@ -148,27 +206,8 @@
             }
         });
 
-        window.addEventListener("onEmbeddedMessagingReady", function () {
-            setStatus("Salesforce event received: onEmbeddedMessagingReady");
-
-            try {
-                if (
-                    window.embeddedservice_bootstrap &&
-                    embeddedservice_bootstrap.utilAPI &&
-                    typeof embeddedservice_bootstrap.utilAPI.showChatButton === "function"
-                ) {
-                    embeddedservice_bootstrap.utilAPI.showChatButton();
-                    setStatus("Requested Salesforce to show the chat button.");
-                }
-            } catch (error) {
-                setStatus("Could not request chat-button visibility: " + error.message);
-            }
-        });
-
         function initEmbeddedMessaging() {
             try {
-                setStatus("bootstrap.min.js loaded successfully.");
-
                 embeddedservice_bootstrap.settings.language = "en_US";
 
                 embeddedservice_bootstrap.init(
@@ -180,26 +219,166 @@
                             "https://escoffier--uat.sandbox.my.salesforce-scrt.com"
                     }
                 );
-
-                setStatus("embeddedservice_bootstrap.init() was called.");
             } catch (error) {
-                setStatus("Initialization error: " + error.message);
-                console.error("Error loading Embedded Messaging:", error);
+                console.error(
+                    "Error loading Embedded Messaging:",
+                    error
+                );
             }
-        }
-
-        function bootstrapLoadFailed() {
-            setStatus(
-                "bootstrap.min.js failed to load. Check the browser Console, CORS, CSP, deployment status, and URL."
-            );
         }
     </script>
 
     <script
-        type="text/javascript"
         src="https://escoffier--uat.sandbox.my.site.com/ESWJulienneedu1777220225846/assets/js/bootstrap.min.js"
+        type="text/javascript"
         onload="initEmbeddedMessaging()"
-        onerror="bootstrapLoadFailed()">
+        onerror="console.error('Embedded Messaging bootstrap failed to load.')">
+    </script>
+
+</body>
+</html>
+
+Use this code and build cleany... Just blank page, only chat should appear.. jist like saturday
+
+Worked for 33s
+Created a clean blank page with:
+
+Only the Salesforce chat launcher
+
+No heading, logo, welcome text, or debug status
+
+Original working Salesforce bootstrap values unchanged
+
+First Name, Last Name, Email, and Phone storage support
+
+No Terms and Conditions code
+
+
+Replace the entire content of your GitHub index.html with this file.
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Julienne Education Chat</title>
+
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // Custom pre-chat localStorage bridge.
+        // Stores and returns First Name, Last Name, Email, and Phone.
+        const CUSTOMER_STORAGE_KEY = "fsc_chatCustomerInfo";
+        const REQUEST_CUSTOMER_INFO = "REQUEST_CHAT_CUSTOMER_INFO";
+        const CUSTOMER_INFO_RESPONSE = "CHAT_CUSTOMER_INFO_RESPONSE";
+        const SAVE_CUSTOMER_INFO = "SAVE_CHAT_CUSTOMER_INFO";
+
+        function getStoredCustomerInfo() {
+            try {
+                const storedValue = window.localStorage.getItem(CUSTOMER_STORAGE_KEY);
+                const customerInfo = storedValue ? JSON.parse(storedValue) : {};
+
+                return {
+                    firstName: String(customerInfo.firstName || "").trim(),
+                    lastName: String(customerInfo.lastName || "").trim(),
+                    email: String(customerInfo.email || "").trim(),
+                    phone: String(customerInfo.phone || "").trim()
+                };
+            } catch (error) {
+                console.error("Unable to read saved chat information:", error);
+                return {
+                    firstName: "",
+                    lastName: "",
+                    email: "",
+                    phone: ""
+                };
+            }
+        }
+
+        function saveCustomerInfo(messageData) {
+            const customerInfo = {
+                firstName: String(messageData.firstName || "").trim(),
+                lastName: String(messageData.lastName || "").trim(),
+                email: String(messageData.email || "").trim(),
+                phone: String(messageData.phone || "").trim()
+            };
+
+            try {
+                window.localStorage.setItem(
+                    CUSTOMER_STORAGE_KEY,
+                    JSON.stringify(customerInfo)
+                );
+            } catch (error) {
+                console.error("Unable to save chat information:", error);
+            }
+        }
+
+        window.addEventListener("message", function (event) {
+            const messageData = event.data;
+
+            if (!messageData || typeof messageData !== "object") {
+                return;
+            }
+
+            if (messageData.type === REQUEST_CUSTOMER_INFO) {
+                const customerInfo = getStoredCustomerInfo();
+
+                if (event.source && typeof event.source.postMessage === "function") {
+                    event.source.postMessage(
+                        {
+                            type: CUSTOMER_INFO_RESPONSE,
+                            firstName: customerInfo.firstName,
+                            lastName: customerInfo.lastName,
+                            email: customerInfo.email,
+                            phone: customerInfo.phone
+                        },
+                        "*"
+                    );
+                }
+
+                return;
+            }
+
+            if (messageData.type === SAVE_CUSTOMER_INFO) {
+                saveCustomerInfo(messageData);
+            }
+        });
+
+        function initEmbeddedMessaging() {
+            try {
+                embeddedservice_bootstrap.settings.language = "en_US";
+
+                embeddedservice_bootstrap.init(
+                    "00DVE000009G9YP",
+                    "Julienne_edu",
+                    "https://escoffier--uat.sandbox.my.site.com/ESWJulienneedu1777220225846",
+                    {
+                        scrt2URL:
+                            "https://escoffier--uat.sandbox.my.salesforce-scrt.com"
+                    }
+                );
+            } catch (error) {
+                console.error("Error loading Embedded Messaging:", error);
+            }
+        }
+    </script>
+
+    <script
+        src="https://escoffier--uat.sandbox.my.site.com/ESWJulienneedu1777220225846/assets/js/bootstrap.min.js"
+        type="text/javascript"
+        onload="initEmbeddedMessaging()"
+        onerror="console.error('Embedded Messaging bootstrap failed to load.')">
     </script>
 </body>
 </html>
+
