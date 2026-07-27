@@ -2,122 +2,245 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <title>Julienne EDU Chat</title>
 
-    <title>Chat</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #181818;
+            background: #f5f5f5;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            min-height: 76px;
+            padding: 12px 24px;
+            background: #ffffff;
+            border-bottom: 1px solid #dddddd;
+        }
+
+        .page-header img {
+            display: block;
+            max-width: 220px;
+            max-height: 64px;
+            object-fit: contain;
+        }
+
+        .page-content {
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .page-content h1 {
+            margin: 0 0 12px;
+        }
+
+        .page-content p {
+            margin: 0;
+            color: #444444;
+        }
+    </style>
 </head>
 
 <body>
-    <script type="text/javascript">
-        const CHAT_FIRST_NAME_KEY = 'chat_first_name';
-        const CHAT_LAST_NAME_KEY = 'chat_last_name';
-        const CHAT_EMAIL_KEY = 'chat_email';
+    <header class="page-header">
+        <img
+            src="https://escoffier--uat.sandbox.my.site.com/resource/1784905312000/ChatLogoNew"
+            alt="Auguste Escoffier School of Culinary Arts"
+            onerror="handleLogoError(this)"
+        >
+    </header>
 
-        window.addEventListener('message', function (event) {
-            if (
-                !event.data ||
-                typeof event.data.type !== 'string'
-            ) {
-                return;
+    <main class="page-content">
+        <h1>Welcome</h1>
+        <p>Use the chat button in the bottom-right corner to contact us.</p>
+    </main>
+
+    <script>
+        "use strict";
+
+        /*
+         * These message names must remain identical to the values used by the
+         * fsc_customerPreChatForm LWC.
+         */
+        const REQUEST_CUSTOMER_INFO = "REQUEST_CHAT_CUSTOMER_INFO";
+        const CUSTOMER_INFO_RESPONSE = "CHAT_CUSTOMER_INFO_RESPONSE";
+        const SAVE_CUSTOMER_INFO = "SAVE_CHAT_CUSTOMER_INFO";
+
+        const CUSTOMER_INFO_STORAGE_KEY = "fsc_chatCustomerInfo";
+        const TERMS_URL = "https://escoffierglobal.com/terms/";
+
+        /*
+         * Only messages from this page, Salesforce, or the Escoffier Salesforce
+         * sandbox are accepted. This prevents unrelated frames from reading or
+         * overwriting stored customer information.
+         */
+        function isAllowedMessageOrigin(origin) {
+            if (!origin || origin === "null") {
+                return false;
             }
 
-            if (
-                event.data.type ===
-                'SAVE_CHAT_CUSTOMER_INFO'
-            ) {
-                const firstName = String(
-                    event.data.firstName || ''
-                ).trim();
+            const allowedOrigins = [
+                window.location.origin,
+                "https://escoffier--uat.sandbox.my.site.com",
+                "https://escoffier--uat.sandbox.my.salesforce.com",
+                "https://escoffier--uat.sandbox.lightning.force.com"
+            ];
 
-                const lastName = String(
-                    event.data.lastName || ''
-                ).trim();
-
-                const email = String(
-                    event.data.email || ''
-                ).trim();
-
-                if (firstName) {
-                    localStorage.setItem(
-                        CHAT_FIRST_NAME_KEY,
-                        firstName
-                    );
-                }
-
-                if (lastName) {
-                    localStorage.setItem(
-                        CHAT_LAST_NAME_KEY,
-                        lastName
-                    );
-                }
-
-                if (email) {
-                    localStorage.setItem(
-                        CHAT_EMAIL_KEY,
-                        email
-                    );
-                }
-
-                return;
+            if (allowedOrigins.includes(origin)) {
+                return true;
             }
 
-            if (
-                event.data.type ===
-                'REQUEST_CHAT_CUSTOMER_INFO'
-            ) {
-                const firstName =
-                    localStorage.getItem(
-                        CHAT_FIRST_NAME_KEY
-                    ) || '';
+            try {
+                const hostname = new URL(origin).hostname.toLowerCase();
 
-                const lastName =
-                    localStorage.getItem(
-                        CHAT_LAST_NAME_KEY
-                    ) || '';
-
-                const email =
-                    localStorage.getItem(
-                        CHAT_EMAIL_KEY
-                    ) || '';
-
-                if (!event.source) {
-                    return;
-                }
-
-                event.source.postMessage(
-                    {
-                        type:
-                            'CHAT_CUSTOMER_INFO_RESPONSE',
-                        firstName,
-                        lastName,
-                        email
-                    },
-                    '*'
+                return (
+                    hostname.endsWith(".salesforce.com") ||
+                    hostname.endsWith(".force.com") ||
+                    hostname.endsWith(".site.com") ||
+                    hostname.endsWith(".salesforce-sites.com")
                 );
+            } catch (error) {
+                return false;
+            }
+        }
+
+        function normalizeCustomerInfo(value) {
+            const source = value && typeof value === "object" ? value : {};
+
+            return {
+                firstName: String(source.firstName || "").trim(),
+                lastName: String(source.lastName || "").trim(),
+                email: String(source.email || "").trim(),
+                phone: String(source.phone || "").trim(),
+                termsAccepted: source.termsAccepted === true,
+                termsUrl: String(source.termsUrl || TERMS_URL),
+                termsAcceptedAt: String(source.termsAcceptedAt || "")
+            };
+        }
+
+        function getStoredCustomerInfo() {
+            try {
+                const storedValue = localStorage.getItem(
+                    CUSTOMER_INFO_STORAGE_KEY
+                );
+
+                if (!storedValue) {
+                    return normalizeCustomerInfo({});
+                }
+
+                return normalizeCustomerInfo(JSON.parse(storedValue));
+            } catch (error) {
+                console.error(
+                    "Unable to read stored chat customer information:",
+                    error
+                );
+                return normalizeCustomerInfo({});
+            }
+        }
+
+        function saveCustomerInfo(messageData) {
+            const customerInfo = normalizeCustomerInfo({
+                firstName: messageData.firstName,
+                lastName: messageData.lastName,
+                email: messageData.email,
+                phone: messageData.phone,
+                termsAccepted: messageData.termsAccepted,
+                termsUrl: messageData.termsUrl || TERMS_URL,
+                termsAcceptedAt: messageData.termsAcceptedAt
+            });
+
+            try {
+                localStorage.setItem(
+                    CUSTOMER_INFO_STORAGE_KEY,
+                    JSON.stringify(customerInfo)
+                );
+            } catch (error) {
+                console.error(
+                    "Unable to save chat customer information:",
+                    error
+                );
+            }
+        }
+
+        function sendCustomerInfo(targetWindow, targetOrigin) {
+            if (!targetWindow || typeof targetWindow.postMessage !== "function") {
+                return;
+            }
+
+            const customerInfo = getStoredCustomerInfo();
+
+            targetWindow.postMessage(
+                {
+                    type: CUSTOMER_INFO_RESPONSE,
+                    firstName: customerInfo.firstName,
+                    lastName: customerInfo.lastName,
+                    email: customerInfo.email,
+                    phone: customerInfo.phone
+                },
+                targetOrigin
+            );
+        }
+
+        window.addEventListener("message", function (event) {
+            if (!isAllowedMessageOrigin(event.origin)) {
+                return;
+            }
+
+            const messageData = event.data;
+
+            if (!messageData || typeof messageData !== "object") {
+                return;
+            }
+
+            if (messageData.type === REQUEST_CUSTOMER_INFO) {
+                sendCustomerInfo(event.source, event.origin);
+                return;
+            }
+
+            if (messageData.type === SAVE_CUSTOMER_INFO) {
+                saveCustomerInfo(messageData);
             }
         });
 
+        function handleLogoError(image) {
+            console.error(
+                "Salesforce Static Resource logo failed to load:",
+                image.src
+            );
+
+            if (!image.dataset.retried) {
+                image.dataset.retried = "true";
+                image.src =
+                    "https://escoffier--uat.sandbox.my.site.com/resource/ChatLogoNew";
+            }
+        }
+
         function initEmbeddedMessaging() {
             try {
-                embeddedservice_bootstrap.settings.language =
-                    'en_US';
+                embeddedservice_bootstrap.settings.language = "en_US";
 
                 embeddedservice_bootstrap.init(
-                    '00DVE000009G9YP',
-                    'NitinTest',
-                    'https://escoffier--uat.sandbox.my.site.com/ESWNitinTest1785021925679',
+                    "00DVE000009G9YP",
+                    "Julienne_edu",
+                    "https://escoffier--uat.sandbox.my.site.com/ESWJulienneedu1777220225846",
                     {
                         scrt2URL:
-                            'https://escoffier--uat.sandbox.my.salesforce-scrt.com'
+                            "https://escoffier--uat.sandbox.my.salesforce-scrt.com"
                     }
                 );
             } catch (error) {
                 console.error(
-                    'Error loading Embedded Messaging:',
+                    "Error loading Embedded Messaging:",
                     error
                 );
             }
@@ -126,8 +249,9 @@
 
     <script
         type="text/javascript"
-        src="https://escoffier--uat.sandbox.my.site.com/ESWNitinTest1785021925679/assets/js/bootstrap.min.js"
-        onload="initEmbeddedMessaging()">
+        src="https://escoffier--uat.sandbox.my.site.com/ESWJulienneedu1777220225846/assets/js/bootstrap.min.js"
+        onload="initEmbeddedMessaging()"
+        onerror="console.error('Embedded Messaging bootstrap failed to load.')">
     </script>
 </body>
 </html>
