@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat</title>
+
     <style>
         html,
         body {
@@ -14,6 +15,7 @@
         }
     </style>
 </head>
+
 <body>
     <script type="text/javascript">
         const CUSTOMER_STORAGE_KEY = "fsc_chatCustomerInfo";
@@ -23,17 +25,37 @@
 
         function getStoredCustomerInfo() {
             try {
-                const storedValue = window.localStorage.getItem(CUSTOMER_STORAGE_KEY);
-                const customerInfo = storedValue ? JSON.parse(storedValue) : {};
+                const storedValue = window.localStorage.getItem(
+                    CUSTOMER_STORAGE_KEY
+                );
+
+                const customerInfo = storedValue
+                    ? JSON.parse(storedValue)
+                    : {};
 
                 return {
-                    firstName: String(customerInfo.firstName || "").trim(),
-                    lastName: String(customerInfo.lastName || "").trim(),
-                    email: String(customerInfo.email || "").trim(),
-                    phone: String(customerInfo.phone || "").trim()
+                    firstName: String(
+                        customerInfo.firstName || ""
+                    ).trim(),
+
+                    lastName: String(
+                        customerInfo.lastName || ""
+                    ).trim(),
+
+                    email: String(
+                        customerInfo.email || ""
+                    ).trim(),
+
+                    phone: String(
+                        customerInfo.phone || ""
+                    ).trim()
                 };
             } catch (error) {
-                console.error("Unable to read saved chat information:", error);
+                console.error(
+                    "Unable to read saved chat information:",
+                    error
+                );
+
                 return {
                     firstName: "",
                     lastName: "",
@@ -43,12 +65,32 @@
             }
         }
 
+        function isReturningCustomer(customerInfo) {
+            return Boolean(
+                customerInfo.firstName &&
+                customerInfo.lastName &&
+                customerInfo.email &&
+                customerInfo.phone
+            );
+        }
+
         function saveCustomerInfo(messageData) {
             const customerInfo = {
-                firstName: String(messageData.firstName || "").trim(),
-                lastName: String(messageData.lastName || "").trim(),
-                email: String(messageData.email || "").trim(),
-                phone: String(messageData.phone || "").trim()
+                firstName: String(
+                    messageData.firstName || ""
+                ).trim(),
+
+                lastName: String(
+                    messageData.lastName || ""
+                ).trim(),
+
+                email: String(
+                    messageData.email || ""
+                ).trim(),
+
+                phone: String(
+                    messageData.phone || ""
+                ).trim()
             };
 
             try {
@@ -57,28 +99,50 @@
                     JSON.stringify(customerInfo)
                 );
             } catch (error) {
-                console.error("Unable to save chat information:", error);
+                console.error(
+                    "Unable to save chat information:",
+                    error
+                );
             }
         }
 
         window.addEventListener("message", function (event) {
             const messageData = event.data;
 
-            if (!messageData || typeof messageData !== "object") {
+            if (
+                !messageData ||
+                typeof messageData !== "object"
+            ) {
                 return;
             }
 
-            if (messageData.type === REQUEST_CUSTOMER_INFO) {
-                const customerInfo = getStoredCustomerInfo();
+            if (
+                messageData.type === REQUEST_CUSTOMER_INFO
+            ) {
+                const customerInfo =
+                    getStoredCustomerInfo();
 
-                if (event.source && typeof event.source.postMessage === "function") {
+                const returningCustomer =
+                    isReturningCustomer(customerInfo);
+
+                if (
+                    event.source &&
+                    typeof event.source.postMessage ===
+                        "function"
+                ) {
                     event.source.postMessage(
                         {
                             type: CUSTOMER_INFO_RESPONSE,
-                            firstName: customerInfo.firstName,
-                            lastName: customerInfo.lastName,
-                            email: customerInfo.email,
-                            phone: customerInfo.phone
+                            firstName:
+                                customerInfo.firstName,
+                            lastName:
+                                customerInfo.lastName,
+                            email:
+                                customerInfo.email,
+                            phone:
+                                customerInfo.phone,
+                            isReturningCustomer:
+                                returningCustomer
                         },
                         "*"
                     );
@@ -87,25 +151,32 @@
                 return;
             }
 
-            if (messageData.type === SAVE_CUSTOMER_INFO) {
+            if (
+                messageData.type === SAVE_CUSTOMER_INFO
+            ) {
                 saveCustomerInfo(messageData);
             }
         });
 
         function initEmbeddedMessaging() {
             try {
-                embeddedservice_bootstrap.settings.language = 'en_US';
+                embeddedservice_bootstrap.settings.language =
+                    "en_US";
 
                 embeddedservice_bootstrap.init(
-                    '00DVE000009G9YP',
-                    'NitinTest_PreChat',
-                    'https://escoffier--uat.sandbox.my.site.com/ESWNitinTestPreChat1785163979170',
+                    "00DVE000009G9YP",
+                    "NitinTest_PreChat",
+                    "https://escoffier--uat.sandbox.my.site.com/ESWNitinTestPreChat1785163979170",
                     {
-                        scrt2URL: 'https://escoffier--uat.sandbox.my.salesforce-scrt.com'
+                        scrt2URL:
+                            "https://escoffier--uat.sandbox.my.salesforce-scrt.com"
                     }
                 );
             } catch (err) {
-                console.error('Error loading Embedded Messaging: ', err);
+                console.error(
+                    "Error loading Embedded Messaging: ",
+                    err
+                );
             }
         }
     </script>
