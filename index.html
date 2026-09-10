@@ -18,30 +18,8 @@
             height: 100%;
             background: #ffffff;
         }
-
-
-        /*
-         * MOBILE ONLY
-         *
-         * Do NOT apply this to desktop.
-         * Desktop will use Salesforce's normal sizing.
-         */
-        @media only screen and (max-width: 768px) {
-
-            .embeddedMessagingFrame {
-                height: 70dvh !important;
-                max-height: 70dvh !important;
-                bottom: 1rem !important;
-            }
-
-            .embeddedMessagingFrame iframe {
-                height: 100% !important;
-                max-height: 100% !important;
-            }
-        }
     </style>
 </head>
-
 
 <body>
 
@@ -60,11 +38,7 @@
         "SAVE_CHAT_CUSTOMER_INFO";
 
 
-    /*
-     * GET SAVED CUSTOMER INFORMATION
-     */
     function getStoredCustomerInfo() {
-
         try {
 
             const storedValue =
@@ -78,7 +52,6 @@
                     : {};
 
             return {
-
                 firstName: String(
                     customerInfo.firstName || ""
                 ).trim(),
@@ -113,11 +86,7 @@
     }
 
 
-    /*
-     * CHECK RETURNING CUSTOMER
-     */
     function isReturningCustomer(customerInfo) {
-
         return Boolean(
             customerInfo.firstName &&
             customerInfo.lastName &&
@@ -127,13 +96,9 @@
     }
 
 
-    /*
-     * SAVE CUSTOMER INFORMATION
-     */
     function saveCustomerInfo(messageData) {
 
         const customerInfo = {
-
             firstName: String(
                 messageData.firstName || ""
             ).trim(),
@@ -150,7 +115,6 @@
                 messageData.phone || ""
             ).trim()
         };
-
 
         try {
 
@@ -169,16 +133,11 @@
     }
 
 
-    /*
-     * COMMUNICATION BETWEEN WEBSITE
-     * AND CUSTOM PRE-CHAT LWC
-     */
     window.addEventListener(
         "message",
         function (event) {
 
             const messageData = event.data;
-
 
             if (
                 !messageData ||
@@ -188,9 +147,6 @@
             }
 
 
-            /*
-             * LWC REQUESTING SAVED CUSTOMER INFO
-             */
             if (
                 messageData.type ===
                 REQUEST_CUSTOMER_INFO
@@ -199,12 +155,10 @@
                 const customerInfo =
                     getStoredCustomerInfo();
 
-
                 const returningCustomer =
                     isReturningCustomer(
                         customerInfo
                     );
-
 
                 if (
                     event.source &&
@@ -240,14 +194,10 @@
             }
 
 
-            /*
-             * LWC SAVING CUSTOMER INFO
-             */
             if (
                 messageData.type ===
                 SAVE_CUSTOMER_INFO
             ) {
-
                 saveCustomerInfo(
                     messageData
                 );
@@ -256,26 +206,18 @@
     );
 
 
-    /*
-     * SALESFORCE EMBEDDED MESSAGING
-     */
     function initEmbeddedMessaging() {
-
         try {
 
-            embeddedservice_bootstrap
-                .settings
-                .language = "en_US";
+            embeddedservice_bootstrap.settings.language =
+                "en_US";
 
-
-            embeddedservice_bootstrap
-                .settings
+            embeddedservice_bootstrap.settings
                 .restrictSessionOnMessagingChannel =
-                    true;
+                true;
 
 
             embeddedservice_bootstrap.init(
-
                 "00D6A000000w629",
 
                 "Julienne_edu_1",
