@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Chat</title>
 
     <style>
@@ -13,140 +18,167 @@
             height: 100%;
             background: #ffffff;
         }
+
+
+        /*
+         * MOBILE ONLY
+         *
+         * Do NOT apply this to desktop.
+         * Desktop will use Salesforce's normal sizing.
+         */
+        @media only screen and (max-width: 768px) {
+
+            .embeddedMessagingFrame {
+                height: 70dvh !important;
+                max-height: 70dvh !important;
+                bottom: 1rem !important;
+            }
+
+            .embeddedMessagingFrame iframe {
+                height: 100% !important;
+                max-height: 100% !important;
+            }
+        }
     </style>
-	<style>
-
-/* Desktop + Mobile */
-
-.embeddedMessagingFrame {
-
-    height: 70dvh !important;
-
-    max-height: 70dvh !important;
-
-}
-
-/* Some Salesforce versions use iframe/container wrappers */
-
-.embeddedMessagingFrame iframe {
-
-    height: 100% !important;
-
-    max-height: 100% !important;
-
-}
-
-/* Mobile */
-
-@media only screen and (max-width: 768px) {
-
-    .embeddedMessagingFrame {
-
-        height: 70dvh !important;
-
-        max-height: 70dvh !important;
-
-        bottom: 1rem !important;
-
-    }
-
-}
-
-</style>
 </head>
 
-<body>
-    <script type="text/javascript">
-        const CUSTOMER_STORAGE_KEY = "fsc_chatCustomerInfo";
-        const REQUEST_CUSTOMER_INFO = "REQUEST_CHAT_CUSTOMER_INFO";
-        const CUSTOMER_INFO_RESPONSE = "CHAT_CUSTOMER_INFO_RESPONSE";
-        const SAVE_CUSTOMER_INFO = "SAVE_CHAT_CUSTOMER_INFO";
 
-        function getStoredCustomerInfo() {
-            try {
-                const storedValue = window.localStorage.getItem(
+<body>
+
+<script type="text/javascript">
+
+    const CUSTOMER_STORAGE_KEY =
+        "fsc_chatCustomerInfo";
+
+    const REQUEST_CUSTOMER_INFO =
+        "REQUEST_CHAT_CUSTOMER_INFO";
+
+    const CUSTOMER_INFO_RESPONSE =
+        "CHAT_CUSTOMER_INFO_RESPONSE";
+
+    const SAVE_CUSTOMER_INFO =
+        "SAVE_CHAT_CUSTOMER_INFO";
+
+
+    /*
+     * GET SAVED CUSTOMER INFORMATION
+     */
+    function getStoredCustomerInfo() {
+
+        try {
+
+            const storedValue =
+                window.localStorage.getItem(
                     CUSTOMER_STORAGE_KEY
                 );
 
-                const customerInfo = storedValue
+            const customerInfo =
+                storedValue
                     ? JSON.parse(storedValue)
                     : {};
 
-                return {
-                    firstName: String(
-                        customerInfo.firstName || ""
-                    ).trim(),
+            return {
 
-                    lastName: String(
-                        customerInfo.lastName || ""
-                    ).trim(),
-
-                    email: String(
-                        customerInfo.email || ""
-                    ).trim(),
-
-                    phone: String(
-                        customerInfo.phone || ""
-                    ).trim()
-                };
-            } catch (error) {
-                console.error(
-                    "Unable to read saved chat information:",
-                    error
-                );
-
-                return {
-                    firstName: "",
-                    lastName: "",
-                    email: "",
-                    phone: ""
-                };
-            }
-        }
-
-        function isReturningCustomer(customerInfo) {
-            return Boolean(
-                customerInfo.firstName &&
-                customerInfo.lastName &&
-                customerInfo.email &&
-                customerInfo.phone
-            );
-        }
-
-        function saveCustomerInfo(messageData) {
-            const customerInfo = {
                 firstName: String(
-                    messageData.firstName || ""
+                    customerInfo.firstName || ""
                 ).trim(),
 
                 lastName: String(
-                    messageData.lastName || ""
+                    customerInfo.lastName || ""
                 ).trim(),
 
                 email: String(
-                    messageData.email || ""
+                    customerInfo.email || ""
                 ).trim(),
 
                 phone: String(
-                    messageData.phone || ""
+                    customerInfo.phone || ""
                 ).trim()
             };
 
-            try {
-                window.localStorage.setItem(
-                    CUSTOMER_STORAGE_KEY,
-                    JSON.stringify(customerInfo)
-                );
-            } catch (error) {
-                console.error(
-                    "Unable to save chat information:",
-                    error
-                );
-            }
-        }
+        } catch (error) {
 
-        window.addEventListener("message", function (event) {
+            console.error(
+                "Unable to read saved chat information:",
+                error
+            );
+
+            return {
+                firstName: "",
+                lastName: "",
+                email: "",
+                phone: ""
+            };
+        }
+    }
+
+
+    /*
+     * CHECK RETURNING CUSTOMER
+     */
+    function isReturningCustomer(customerInfo) {
+
+        return Boolean(
+            customerInfo.firstName &&
+            customerInfo.lastName &&
+            customerInfo.email &&
+            customerInfo.phone
+        );
+    }
+
+
+    /*
+     * SAVE CUSTOMER INFORMATION
+     */
+    function saveCustomerInfo(messageData) {
+
+        const customerInfo = {
+
+            firstName: String(
+                messageData.firstName || ""
+            ).trim(),
+
+            lastName: String(
+                messageData.lastName || ""
+            ).trim(),
+
+            email: String(
+                messageData.email || ""
+            ).trim(),
+
+            phone: String(
+                messageData.phone || ""
+            ).trim()
+        };
+
+
+        try {
+
+            window.localStorage.setItem(
+                CUSTOMER_STORAGE_KEY,
+                JSON.stringify(customerInfo)
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Unable to save chat information:",
+                error
+            );
+        }
+    }
+
+
+    /*
+     * COMMUNICATION BETWEEN WEBSITE
+     * AND CUSTOM PRE-CHAT LWC
+     */
+    window.addEventListener(
+        "message",
+        function (event) {
+
             const messageData = event.data;
+
 
             if (
                 !messageData ||
@@ -155,31 +187,48 @@
                 return;
             }
 
+
+            /*
+             * LWC REQUESTING SAVED CUSTOMER INFO
+             */
             if (
-                messageData.type === REQUEST_CUSTOMER_INFO
+                messageData.type ===
+                REQUEST_CUSTOMER_INFO
             ) {
+
                 const customerInfo =
                     getStoredCustomerInfo();
 
+
                 const returningCustomer =
-                    isReturningCustomer(customerInfo);
+                    isReturningCustomer(
+                        customerInfo
+                    );
+
 
                 if (
                     event.source &&
                     typeof event.source.postMessage ===
                         "function"
                 ) {
+
                     event.source.postMessage(
                         {
-                            type: CUSTOMER_INFO_RESPONSE,
+                            type:
+                                CUSTOMER_INFO_RESPONSE,
+
                             firstName:
                                 customerInfo.firstName,
+
                             lastName:
                                 customerInfo.lastName,
+
                             email:
                                 customerInfo.email,
+
                             phone:
                                 customerInfo.phone,
+
                             isReturningCustomer:
                                 returningCustomer
                         },
@@ -190,51 +239,73 @@
                 return;
             }
 
-            if (
-                messageData.type === SAVE_CUSTOMER_INFO
-            ) {
-                saveCustomerInfo(messageData);
-            }
-        });
 
-        function initEmbeddedMessaging() {
-            try {
-                embeddedservice_bootstrap.settings.language = "en_US";
-			    embeddedservice_bootstrap.settings.restrictSessionOnMessagingChannel = true;
-                embeddedservice_bootstrap.init(
-				'00D6A000000w629',
-				'Julienne_edu_1',
-				'https://escoffier.my.site.com/ESWJulienneedu11787765871616',
-				{
-					scrt2URL: 'https://escoffier.my.salesforce-scrt.com'
-				}
-			);
-            } catch (err) {
-                console.error(
-                    "Error loading Embedded Messaging: ",
-                    err
+            /*
+             * LWC SAVING CUSTOMER INFO
+             */
+            if (
+                messageData.type ===
+                SAVE_CUSTOMER_INFO
+            ) {
+
+                saveCustomerInfo(
+                    messageData
                 );
             }
         }
-    </script>
-<script type='text/javascript'>
-	function initEmbeddedMessaging() {
-		try {
-			embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
+    );
 
-			embeddedservice_bootstrap.init(
-				'00D6A000000w629',
-				'Julienne_edu_1',
-				'https://escoffier.my.site.com/ESWJulienneedu11787765871616',
-				{
-					scrt2URL: 'https://escoffier.my.salesforce-scrt.com'
-				}
-			);
-		} catch (err) {
-			console.error('Error loading Embedded Messaging: ', err);
-		}
-	};
+
+    /*
+     * SALESFORCE EMBEDDED MESSAGING
+     */
+    function initEmbeddedMessaging() {
+
+        try {
+
+            embeddedservice_bootstrap
+                .settings
+                .language = "en_US";
+
+
+            embeddedservice_bootstrap
+                .settings
+                .restrictSessionOnMessagingChannel =
+                    true;
+
+
+            embeddedservice_bootstrap.init(
+
+                "00D6A000000w629",
+
+                "Julienne_edu_1",
+
+                "https://escoffier.my.site.com/ESWJulienneedu11787765871616",
+
+                {
+                    scrt2URL:
+                        "https://escoffier.my.salesforce-scrt.com"
+                }
+            );
+
+        } catch (err) {
+
+            console.error(
+                "Error loading Embedded Messaging: ",
+                err
+            );
+        }
+    }
+
 </script>
-<script type='text/javascript' src='https://escoffier.my.site.com/ESWJulienneedu11787765871616/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+
+
+<script
+    type="text/javascript"
+    src="https://escoffier.my.site.com/ESWJulienneedu11787765871616/assets/js/bootstrap.min.js"
+    onload="initEmbeddedMessaging()">
+</script>
+
+
 </body>
 </html>
