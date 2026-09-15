@@ -85,11 +85,10 @@
 
         /* =====================================================
            GREETING
+           NORMAL WHITE BOX - NO SPEECH BUBBLE POINTER
            ===================================================== */
 
         #julienneGreeting {
-            position: relative;
-
             box-sizing: border-box;
 
             width: 100%;
@@ -101,7 +100,7 @@
             background: #ffffff;
             color: #222222;
 
-            border-radius: 18px;
+            border-radius: 12px;
 
             font-family:
                 Arial,
@@ -114,25 +113,13 @@
 
             box-shadow:
                 0 3px 12px rgba(0, 0, 0, 0.18);
+
+            cursor: pointer;
         }
 
 
-        #julienneGreeting::before {
-            content: "";
-
-            position: absolute;
-
-            top: -8px;
-            left: 50%;
-
-            width: 16px;
-            height: 16px;
-
-            background: #ffffff;
-
-            transform:
-                translateX(-50%)
-                rotate(45deg);
+        #julienneGreeting:hover {
+            background: #f7f7f7;
         }
 
 
@@ -218,7 +205,12 @@
     </button>
 
 
-    <div id="julienneGreeting">
+    <div
+        id="julienneGreeting"
+        role="button"
+        tabindex="0"
+        aria-label="Open Julienne AI Assistant"
+    >
         Hi there! Are there any questions that I can answer for you?
     </div>
 
@@ -250,6 +242,12 @@
     const launcher =
         document.getElementById(
             "julienneLauncher"
+        );
+
+
+    const greeting =
+        document.getElementById(
+            "julienneGreeting"
         );
 
 
@@ -485,55 +483,92 @@
     }
 
 
+    /* =====================================================
+       ONE FUNCTION USED BY BOTH BOXES
+       ===================================================== */
+
+    function openJulienneChat() {
+
+        try {
+
+            if (
+                window.embeddedservice_bootstrap &&
+                embeddedservice_bootstrap.utilAPI &&
+                typeof embeddedservice_bootstrap
+                    .utilAPI
+                    .launchChat === "function"
+            ) {
+
+                hideCustomLauncher();
+
+
+                embeddedservice_bootstrap
+                    .utilAPI
+                    .launchChat()
+
+                    .catch(
+                        function(error) {
+
+                            console.error(
+                                "Unable to launch chat:",
+                                error
+                            );
+
+                            showCustomLauncher();
+
+                        }
+                    );
+
+            } else {
+
+                console.log(
+                    "Embedded Messaging is still loading."
+                );
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Unable to launch chat:",
+                error
+            );
+
+            showCustomLauncher();
+
+        }
+    }
+
+
+    /* Red box opens chat */
+
     launcher.addEventListener(
         "click",
-        function() {
-
-            try {
-
-                if (
-                    window.embeddedservice_bootstrap &&
-                    embeddedservice_bootstrap.utilAPI &&
-                    typeof embeddedservice_bootstrap
-                        .utilAPI
-                        .launchChat === "function"
-                ) {
-
-                    hideCustomLauncher();
+        openJulienneChat
+    );
 
 
-                    embeddedservice_bootstrap
-                        .utilAPI
-                        .launchChat()
+    /* White box opens chat */
 
-                        .catch(
-                            function(error) {
+    greeting.addEventListener(
+        "click",
+        openJulienneChat
+    );
 
-                                console.error(
-                                    "Unable to launch chat:",
-                                    error
-                                );
 
-                                showCustomLauncher();
+    /* Keyboard accessibility for white box */
 
-                            }
-                        );
+    greeting.addEventListener(
+        "keydown",
+        function(event) {
 
-                } else {
+            if (
+                event.key === "Enter" ||
+                event.key === " "
+            ) {
 
-                    console.log(
-                        "Embedded Messaging is still loading."
-                    );
-                }
+                event.preventDefault();
 
-            } catch (error) {
-
-                console.error(
-                    "Unable to launch chat:",
-                    error
-                );
-
-                showCustomLauncher();
+                openJulienneChat();
 
             }
         }
