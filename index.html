@@ -34,11 +34,18 @@
             display: flex;
             flex-direction: column;
             align-items: stretch;
+
+            /* Makes both sections appear as one box */
+            border-radius: 18px;
+            overflow: hidden;
+
+            box-shadow:
+                0 4px 14px rgba(0, 0, 0, 0.18);
         }
 
 
         /* =====================================================
-           JULIENNE BUTTON
+           RED JULIENNE HEADER
            ===================================================== */
 
         #julienneLauncher {
@@ -47,22 +54,25 @@
             width: 100%;
             height: 50px;
 
-            padding: 0 18px;
+            padding: 0 14px;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
             border: none;
-            border-radius: 25px;
+
+            /*
+             * Only TOP corners rounded.
+             * Bottom is completely flat so it joins
+             * directly to the white section.
+             */
+            border-radius: 18px 18px 0 0;
 
             background: #c8102e;
             color: #ffffff;
 
             cursor: pointer;
-
-            box-shadow:
-                0 4px 12px rgba(0, 0, 0, 0.20);
 
             font-family:
                 Arial,
@@ -77,15 +87,14 @@
 
 
         .julienne-launcher-text {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 400;
             white-space: nowrap;
         }
 
 
         /* =====================================================
-           GREETING
-           NORMAL WHITE BOX - NO SPEECH BUBBLE POINTER
+           WHITE GREETING SECTION
            ===================================================== */
 
         #julienneGreeting {
@@ -93,26 +102,30 @@
 
             width: 100%;
 
-            margin-top: 8px;
+            /*
+             * IMPORTANT:
+             * No margin = no gap between red and white.
+             */
+            margin: 0;
 
-            padding: 12px 16px;
+            padding: 12px 14px;
 
             background: #ffffff;
             color: #222222;
 
-            border-radius: 12px;
+            /*
+             * Only BOTTOM corners rounded.
+             */
+            border-radius: 0 0 18px 18px;
 
             font-family:
                 Arial,
                 Helvetica,
                 sans-serif;
 
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 400;
             line-height: 1.4;
-
-            box-shadow:
-                0 3px 12px rgba(0, 0, 0, 0.18);
 
             cursor: pointer;
         }
@@ -153,32 +166,27 @@
                 right: 14px;
                 bottom: 18px;
 
-                width: 230px;
+                width: 150px;
             }
 
 
             #julienneLauncher {
-                width: 100%;
                 height: 46px;
 
-                padding: 0 16px;
-
-                border-radius: 23px;
+                padding: 0 12px;
             }
 
 
             .julienne-launcher-text {
-                font-size: 13px;
+                font-size: 12px;
                 font-weight: 400;
             }
 
 
             #julienneGreeting {
-                width: 100%;
+                padding: 11px 13px;
 
-                padding: 11px 14px;
-
-                font-size: 12px;
+                font-size: 11px;
                 font-weight: 400;
             }
         }
@@ -189,6 +197,10 @@
 
 <body>
 
+
+<!-- ==========================================================
+     CUSTOM JULIENNE LAUNCHER
+     ========================================================== -->
 
 <div id="julienneLauncherWrapper">
 
@@ -220,6 +232,10 @@
 
 <script type="text/javascript">
 
+    /* =====================================================
+       CONSTANTS
+       ===================================================== */
+
     const CUSTOMER_STORAGE_KEY =
         "fsc_chatCustomerInfo";
 
@@ -250,6 +266,10 @@
             "julienneGreeting"
         );
 
+
+    /* =====================================================
+       CUSTOMER STORAGE
+       ===================================================== */
 
     function getStoredCustomerInfo() {
 
@@ -360,6 +380,10 @@
     }
 
 
+    /* =====================================================
+       PRECHAT COMMUNICATION
+       ===================================================== */
+
     window.addEventListener(
         "message",
         function(event) {
@@ -441,6 +465,10 @@
     );
 
 
+    /* =====================================================
+       SHOW / HIDE CUSTOM LAUNCHER
+       ===================================================== */
+
     function showCustomLauncher() {
 
         wrapper.style.display =
@@ -454,6 +482,10 @@
             "none";
     }
 
+
+    /* =====================================================
+       HIDE SALESFORCE DEFAULT LAUNCHER
+       ===================================================== */
 
     function hideSalesforceLauncher() {
 
@@ -484,7 +516,8 @@
 
 
     /* =====================================================
-       ONE FUNCTION USED BY BOTH BOXES
+       OPEN CHAT
+       USED BY BOTH RED + WHITE SECTIONS
        ===================================================== */
 
     function openJulienneChat() {
@@ -539,7 +572,9 @@
     }
 
 
-    /* Red box opens chat */
+    /* =====================================================
+       BOTH SECTIONS OPEN CHAT
+       ===================================================== */
 
     launcher.addEventListener(
         "click",
@@ -547,15 +582,11 @@
     );
 
 
-    /* White box opens chat */
-
     greeting.addEventListener(
         "click",
         openJulienneChat
     );
 
-
-    /* Keyboard accessibility for white box */
 
     greeting.addEventListener(
         "keydown",
@@ -575,6 +606,10 @@
     );
 
 
+    /* =====================================================
+       SALESFORCE BUTTON CREATED
+       ===================================================== */
+
     window.addEventListener(
         "onEmbeddedMessagingButtonCreated",
         function() {
@@ -583,6 +618,7 @@
                 "Salesforce messaging button created."
             );
 
+
             hideSalesforceLauncher();
 
             showCustomLauncher();
@@ -590,6 +626,10 @@
         }
     );
 
+
+    /* =====================================================
+       EMBEDDED MESSAGING READY
+       ===================================================== */
 
     window.addEventListener(
         "onEmbeddedMessagingReady",
@@ -628,6 +668,10 @@
     );
 
 
+    /* =====================================================
+       CHAT WINDOW OPENED
+       ===================================================== */
+
     window.addEventListener(
         "onEmbeddedMessagingWindowOpened",
         function() {
@@ -636,11 +680,16 @@
                 "Messaging window opened."
             );
 
+
             hideCustomLauncher();
 
         }
     );
 
+
+    /* =====================================================
+       CHAT WINDOW CLOSED
+       ===================================================== */
 
     window.addEventListener(
         "onEmbeddedMessagingWindowClosed",
@@ -665,6 +714,10 @@
         }
     );
 
+
+    /* =====================================================
+       INITIALIZE EMBEDDED MESSAGING
+       ===================================================== */
 
     function initEmbeddedMessaging() {
 
