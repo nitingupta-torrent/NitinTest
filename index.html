@@ -7,6 +7,11 @@
     <title>Chat</title>
 
     <style>
+
+        /* =====================================================
+           PAGE
+           ===================================================== */
+
         html,
         body {
             margin: 0;
@@ -15,14 +20,17 @@
             background: #ffffff;
         }
 
+
         /* =====================================================
-           CUSTOM JULIENNE LAUNCHER
+           CUSTOM JULIENNE LAUNCHER WRAPPER
            ===================================================== */
 
         #julienneLauncherWrapper {
             position: fixed;
+
             right: 24px;
             bottom: 24px;
+
             z-index: 999999;
 
             display: flex;
@@ -30,54 +38,49 @@
             align-items: flex-end;
         }
 
+
+        /* =====================================================
+           JULIENNE BUTTON
+           ===================================================== */
+
         #julienneLauncher {
-            height: 62px;
-            padding: 0 22px 0 14px;
+            height: 54px;
+
+            padding: 0 24px;
 
             display: flex;
             align-items: center;
-            gap: 14px;
+            justify-content: center;
 
             border: none;
-            border-radius: 31px;
+            border-radius: 27px;
 
             background: #c8102e;
             color: #ffffff;
 
             cursor: pointer;
 
-            box-shadow: 0 4px 12px rgba(0,0,0,.20);
+            box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.20);
 
-            font-family: Arial, Helvetica, sans-serif;
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
         }
+
 
         #julienneLauncher:hover {
             background: #ad0d28;
         }
 
-        .julienne-logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            width: 45px;
-            height: 45px;
-
-            padding-right: 12px;
-
-            border-right: 1px solid rgba(255,255,255,.65);
-
-            font-family: Georgia, serif;
-            font-size: 32px;
-
-            color: #ffffff;
-        }
 
         .julienne-launcher-text {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 600;
             white-space: nowrap;
         }
+
 
         /* =====================================================
            GREETING
@@ -87,9 +90,11 @@
             position: relative;
 
             box-sizing: border-box;
+
             width: 285px;
 
             margin-top: 8px;
+
             padding: 14px 18px;
 
             background: #ffffff;
@@ -97,12 +102,20 @@
 
             border-radius: 18px;
 
-            font-family: Arial, Helvetica, sans-serif;
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
             font-size: 16px;
             line-height: 1.35;
 
-            box-shadow: 0 3px 12px rgba(0,0,0,.18);
+            box-shadow:
+                0 3px 12px rgba(0, 0, 0, 0.18);
         }
+
+
+        /* Arrow pointing upward toward Julienne button */
 
         #julienneGreeting::before {
             content: "";
@@ -120,11 +133,14 @@
             transform: rotate(45deg);
         }
 
+
         /* =====================================================
-           MOBILE CHAT WINDOW
+           MOBILE
            ===================================================== */
 
         @media only screen and (max-width: 768px) {
+
+            /* Existing chat window sizing */
 
             .embeddedMessagingFrame {
                 position: fixed !important;
@@ -135,47 +151,55 @@
                 height: 70dvh !important;
                 max-height: 70dvh !important;
 
-                transform: translateY(4vh) !important;
+                transform:
+                    translateY(4vh) !important;
             }
+
 
             .embeddedMessagingFrame iframe {
                 height: 100% !important;
                 max-height: 100% !important;
             }
 
+
+            /* Custom launcher */
+
             #julienneLauncherWrapper {
                 right: 14px;
                 bottom: 18px;
             }
 
+
             #julienneLauncher {
-                height: 54px;
-                padding: 0 16px 0 10px;
-                gap: 10px;
+                height: 50px;
+
+                padding: 0 20px;
+
+                border-radius: 25px;
             }
 
-            .julienne-logo {
-                width: 38px;
-                height: 38px;
-
-                padding-right: 9px;
-
-                font-size: 27px;
-            }
 
             .julienne-launcher-text {
                 font-size: 15px;
             }
+
 
             #julienneGreeting {
                 width: 260px;
                 font-size: 15px;
             }
         }
+
     </style>
 </head>
 
+
 <body>
+
+
+<!-- ==========================================================
+     CUSTOM JULIENNE LAUNCHER
+     ========================================================== -->
 
 <div id="julienneLauncherWrapper">
 
@@ -184,26 +208,20 @@
         type="button"
         aria-label="Open Julienne AI Assistant"
     >
-        <span class="julienne-logo">
-               <img
-
-        src="https://escoffier--uat.sandbox.my.site.com/ESWJulienneedu1777220444593/sfsites/c/resource/1789478732000/ChatLogoNew"
-
-        alt="Julienne AI Assistant"
-
-    >
-        </span>
 
         <span class="julienne-launcher-text">
             Julienne AI Assistant
         </span>
+
     </button>
+
 
     <div id="julienneGreeting">
         Hi there! Are there any questions that I can answer for you?
     </div>
 
 </div>
+
 
 
 <script type="text/javascript">
@@ -230,6 +248,7 @@
             "julienneLauncherWrapper"
         );
 
+
     const launcher =
         document.getElementById(
             "julienneLauncher"
@@ -249,10 +268,12 @@
                     CUSTOMER_STORAGE_KEY
                 );
 
+
             const customerInfo =
                 storedValue
                     ? JSON.parse(storedValue)
                     : {};
+
 
             return {
 
@@ -274,6 +295,7 @@
 
             };
 
+
         } catch (error) {
 
             console.error(
@@ -281,26 +303,47 @@
                 error
             );
 
+
             return {
+
                 firstName: "",
+
                 lastName: "",
+
                 email: "",
+
                 phone: ""
+
             };
         }
     }
 
 
+
+    /* =====================================================
+       RETURNING CUSTOMER
+       ===================================================== */
+
     function isReturningCustomer(customerInfo) {
 
         return Boolean(
+
             customerInfo.firstName &&
+
             customerInfo.lastName &&
+
             customerInfo.email &&
+
             customerInfo.phone
+
         );
     }
 
+
+
+    /* =====================================================
+       SAVE CUSTOMER INFORMATION
+       ===================================================== */
 
     function saveCustomerInfo(messageData) {
 
@@ -324,21 +367,33 @@
 
         };
 
+
         try {
 
             window.localStorage.setItem(
+
                 CUSTOMER_STORAGE_KEY,
-                JSON.stringify(customerInfo)
+
+                JSON.stringify(
+                    customerInfo
+                )
+
             );
+
 
         } catch (error) {
 
             console.error(
+
                 "Unable to save chat information:",
+
                 error
+
             );
+
         }
     }
+
 
 
     /* =====================================================
@@ -346,41 +401,64 @@
        ===================================================== */
 
     window.addEventListener(
+
         "message",
+
         function(event) {
+
 
             const messageData =
                 event.data;
 
+
             if (
+
                 !messageData ||
+
                 typeof messageData !== "object"
+
             ) {
+
                 return;
+
             }
 
 
+
+            /* Customer information requested */
+
             if (
+
                 messageData.type ===
-                REQUEST_CUSTOMER_INFO
+                    REQUEST_CUSTOMER_INFO
+
             ) {
+
 
                 const customerInfo =
                     getStoredCustomerInfo();
+
 
                 const returningCustomer =
                     isReturningCustomer(
                         customerInfo
                     );
 
+
                 if (
+
                     event.source &&
+
                     typeof event.source.postMessage ===
                         "function"
+
                 ) {
 
+
                     event.source.postMessage(
+
                         {
+
                             type:
                                 CUSTOMER_INFO_RESPONSE,
 
@@ -398,36 +476,52 @@
 
                             isReturningCustomer:
                                 returningCustomer
+
                         },
+
                         "*"
+
                     );
+
                 }
 
+
                 return;
+
             }
 
 
+
+            /* Save customer information */
+
             if (
+
                 messageData.type ===
-                SAVE_CUSTOMER_INFO
+                    SAVE_CUSTOMER_INFO
+
             ) {
 
                 saveCustomerInfo(
                     messageData
                 );
+
             }
+
         }
+
     );
 
 
+
     /* =====================================================
-       SHOW/HIDE CUSTOM LAUNCHER
+       SHOW / HIDE CUSTOM LAUNCHER
        ===================================================== */
 
     function showCustomLauncher() {
 
         wrapper.style.display =
             "flex";
+
     }
 
 
@@ -435,11 +529,13 @@
 
         wrapper.style.display =
             "none";
+
     }
 
 
+
     /* =====================================================
-       HIDE SALESFORCE DEFAULT LAUNCHER
+       HIDE SALESFORCE DEFAULT BUTTON
        ===================================================== */
 
     function hideSalesforceLauncher() {
@@ -447,12 +543,17 @@
         try {
 
             if (
+
                 window.embeddedservice_bootstrap &&
+
                 embeddedservice_bootstrap.utilAPI &&
+
                 typeof embeddedservice_bootstrap
                     .utilAPI
                     .hideChatButton === "function"
+
             ) {
+
 
                 embeddedservice_bootstrap
                     .utilAPI
@@ -460,14 +561,22 @@
 
             }
 
+
         } catch (error) {
 
+
             console.log(
+
                 "Salesforce launcher could not be hidden yet:",
+
                 error
+
             );
+
         }
+
     }
+
 
 
     /* =====================================================
@@ -475,87 +584,142 @@
        ===================================================== */
 
     launcher.addEventListener(
+
         "click",
+
         function() {
+
 
             try {
 
+
                 if (
+
                     window.embeddedservice_bootstrap &&
+
                     embeddedservice_bootstrap.utilAPI &&
+
                     typeof embeddedservice_bootstrap
                         .utilAPI
                         .launchChat === "function"
+
                 ) {
 
+
+                    /*
+                     * Hide custom Julienne button
+                     * while chat is open.
+                     */
+
                     hideCustomLauncher();
+
+
+                    /*
+                     * Open Salesforce chat.
+                     */
 
                     embeddedservice_bootstrap
                         .utilAPI
                         .launchChat()
 
                         .catch(
+
                             function(error) {
 
+
                                 console.error(
+
                                     "Unable to launch chat:",
+
                                     error
+
                                 );
 
+
+                                /*
+                                 * Restore Julienne button
+                                 * if chat fails to open.
+                                 */
+
                                 showCustomLauncher();
+
                             }
+
                         );
+
 
                 } else {
 
+
                     console.log(
+
                         "Embedded Messaging is still loading."
+
                     );
+
                 }
+
 
             } catch (error) {
 
+
                 console.error(
+
                     "Unable to launch chat:",
+
                     error
+
                 );
 
+
                 showCustomLauncher();
+
             }
+
         }
+
     );
+
 
 
     /* =====================================================
        SALESFORCE BUTTON CREATED
-       IMPORTANT FOR REFRESH / RESTORED SESSION
+       IMPORTANT FOR REFRESH
        ===================================================== */
 
     window.addEventListener(
+
         "onEmbeddedMessagingButtonCreated",
+
         function() {
 
+
             console.log(
+
                 "Salesforce messaging button created."
+
             );
 
+
             /*
-             * Salesforce can recreate its default launcher
-             * after refresh when an active session exists.
-             *
-             * Hide it again.
+             * Salesforce may recreate its default
+             * red launcher when an existing session
+             * is restored after refresh.
              */
 
             hideSalesforceLauncher();
 
 
             /*
-             * Keep Julienne launcher visible.
+             * Show our Julienne launcher instead.
              */
 
             showCustomLauncher();
+
         }
+
     );
+
 
 
     /* =====================================================
@@ -563,17 +727,18 @@
        ===================================================== */
 
     window.addEventListener(
+
         "onEmbeddedMessagingReady",
+
         function() {
 
+
             console.log(
+
                 "Embedded Messaging ready."
+
             );
 
-            /*
-             * Try again because on refresh Salesforce
-             * may rebuild its own launcher.
-             */
 
             hideSalesforceLauncher();
 
@@ -581,31 +746,39 @@
 
 
             /*
-             * Small delayed retry.
-             * Useful when Salesforce restores a session
-             * slightly after the ready event.
+             * Retry because Salesforce can restore
+             * the previous session asynchronously.
              */
 
             setTimeout(
+
                 function() {
 
                     hideSalesforceLauncher();
 
                 },
+
                 500
+
             );
 
 
             setTimeout(
+
                 function() {
 
                     hideSalesforceLauncher();
 
                 },
+
                 1500
+
             );
+
         }
+
     );
+
 
 
     /* =====================================================
@@ -613,16 +786,25 @@
        ===================================================== */
 
     window.addEventListener(
+
         "onEmbeddedMessagingWindowOpened",
+
         function() {
 
+
             console.log(
+
                 "Messaging window opened."
+
             );
 
+
             hideCustomLauncher();
+
         }
+
     );
+
 
 
     /* =====================================================
@@ -630,60 +812,84 @@
        ===================================================== */
 
     window.addEventListener(
+
         "onEmbeddedMessagingWindowClosed",
+
         function() {
 
+
             console.log(
+
                 "Messaging window closed."
+
             );
 
-            /*
-             * Salesforce may recreate its normal button
-             * when the window closes/minimizes.
-             */
 
             setTimeout(
+
                 function() {
 
+
+                    /*
+                     * Hide Salesforce's standard
+                     * red launcher again.
+                     */
+
                     hideSalesforceLauncher();
+
+
+                    /*
+                     * Restore our custom Julienne
+                     * launcher.
+                     */
 
                     showCustomLauncher();
 
                 },
+
                 100
+
             );
+
         }
+
     );
 
 
+
     /* =====================================================
-       INITIALIZE EMBEDDED MESSAGING
+       INITIALIZE SALESFORCE EMBEDDED MESSAGING
        ===================================================== */
 
     function initEmbeddedMessaging() {
 
+
         try {
+
 
             embeddedservice_bootstrap
                 .settings
                 .language =
-                "en_US";
+                    "en_US";
 
 
             embeddedservice_bootstrap
                 .settings
                 .restrictSessionOnMessagingChannel =
-                true;
+                    true;
 
 
             /*
-             * Initial Salesforce launcher should be hidden.
+             * Prevent Salesforce's normal
+             * round red button from showing
+             * during initial load.
              */
 
             embeddedservice_bootstrap
                 .settings
                 .hideChatButtonOnLoad =
-                true;
+                    true;
+
 
 
             embeddedservice_bootstrap.init(
@@ -695,29 +901,48 @@
                 "https://escoffier.my.site.com/ESWJulienneedu11787765871616",
 
                 {
+
                     scrt2URL:
                         "https://escoffier.my.salesforce-scrt.com"
+
                 }
 
             );
 
+
         } catch (err) {
 
+
             console.error(
+
                 "Error loading Embedded Messaging:",
+
                 err
+
             );
+
         }
+
     }
 
 </script>
 
 
+
+<!-- ==========================================================
+     SALESFORCE EMBEDDED MESSAGING
+     ========================================================== -->
+
 <script
+
     type="text/javascript"
+
     src="https://escoffier.my.site.com/ESWJulienneedu11787765871616/assets/js/bootstrap.min.js"
+
     onload="initEmbeddedMessaging()">
+
 </script>
+
 
 </body>
 </html>
