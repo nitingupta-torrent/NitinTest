@@ -35,7 +35,9 @@
 
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
+
+            /* Center button + greeting */
+            align-items: center;
         }
 
 
@@ -115,7 +117,7 @@
         }
 
 
-        /* Arrow pointing upward toward Julienne button */
+        /* Centered arrow */
 
         #julienneGreeting::before {
             content: "";
@@ -123,14 +125,16 @@
             position: absolute;
 
             top: -8px;
-            right: 38px;
+            left: 50%;
 
             width: 16px;
             height: 16px;
 
             background: #ffffff;
 
-            transform: rotate(45deg);
+            transform:
+                translateX(-50%)
+                rotate(45deg);
         }
 
 
@@ -139,8 +143,6 @@
            ===================================================== */
 
         @media only screen and (max-width: 768px) {
-
-            /* Existing chat window sizing */
 
             .embeddedMessagingFrame {
                 position: fixed !important;
@@ -162,11 +164,11 @@
             }
 
 
-            /* Custom launcher */
-
             #julienneLauncherWrapper {
                 right: 14px;
                 bottom: 18px;
+
+                align-items: center;
             }
 
 
@@ -188,6 +190,7 @@
                 width: 260px;
                 font-size: 15px;
             }
+
         }
 
     </style>
@@ -305,19 +308,13 @@
 
 
             return {
-
                 firstName: "",
-
                 lastName: "",
-
                 email: "",
-
                 phone: ""
-
             };
         }
     }
-
 
 
     /* =====================================================
@@ -338,7 +335,6 @@
 
         );
     }
-
 
 
     /* =====================================================
@@ -384,16 +380,12 @@
         } catch (error) {
 
             console.error(
-
                 "Unable to save chat information:",
-
                 error
-
             );
 
         }
     }
-
 
 
     /* =====================================================
@@ -422,7 +414,6 @@
                 return;
 
             }
-
 
 
             /* Customer information requested */
@@ -491,7 +482,6 @@
             }
 
 
-
             /* Save customer information */
 
             if (
@@ -512,7 +502,6 @@
     );
 
 
-
     /* =====================================================
        SHOW / HIDE CUSTOM LAUNCHER
        ===================================================== */
@@ -531,7 +520,6 @@
             "none";
 
     }
-
 
 
     /* =====================================================
@@ -578,7 +566,6 @@
     }
 
 
-
     /* =====================================================
        CUSTOM BUTTON CLICK
        ===================================================== */
@@ -606,17 +593,8 @@
                 ) {
 
 
-                    /*
-                     * Hide custom Julienne button
-                     * while chat is open.
-                     */
-
                     hideCustomLauncher();
 
-
-                    /*
-                     * Open Salesforce chat.
-                     */
 
                     embeddedservice_bootstrap
                         .utilAPI
@@ -636,11 +614,6 @@
                                 );
 
 
-                                /*
-                                 * Restore Julienne button
-                                 * if chat fails to open.
-                                 */
-
                                 showCustomLauncher();
 
                             }
@@ -652,9 +625,7 @@
 
 
                     console.log(
-
                         "Embedded Messaging is still loading."
-
                     );
 
                 }
@@ -664,11 +635,8 @@
 
 
                 console.error(
-
                     "Unable to launch chat:",
-
                     error
-
                 );
 
 
@@ -681,10 +649,9 @@
     );
 
 
-
     /* =====================================================
        SALESFORCE BUTTON CREATED
-       IMPORTANT FOR REFRESH
+       REFRESH / RESTORED SESSION FIX
        ===================================================== */
 
     window.addEventListener(
@@ -695,31 +662,17 @@
 
 
             console.log(
-
                 "Salesforce messaging button created."
-
             );
 
 
-            /*
-             * Salesforce may recreate its default
-             * red launcher when an existing session
-             * is restored after refresh.
-             */
-
             hideSalesforceLauncher();
-
-
-            /*
-             * Show our Julienne launcher instead.
-             */
 
             showCustomLauncher();
 
         }
 
     );
-
 
 
     /* =====================================================
@@ -734,9 +687,7 @@
 
 
             console.log(
-
                 "Embedded Messaging ready."
-
             );
 
 
@@ -746,8 +697,8 @@
 
 
             /*
-             * Retry because Salesforce can restore
-             * the previous session asynchronously.
+             * Salesforce may restore the session
+             * asynchronously after page refresh.
              */
 
             setTimeout(
@@ -780,7 +731,6 @@
     );
 
 
-
     /* =====================================================
        CHAT WINDOW OPENED
        ===================================================== */
@@ -793,9 +743,7 @@
 
 
             console.log(
-
                 "Messaging window opened."
-
             );
 
 
@@ -804,7 +752,6 @@
         }
 
     );
-
 
 
     /* =====================================================
@@ -819,9 +766,7 @@
 
 
             console.log(
-
                 "Messaging window closed."
-
             );
 
 
@@ -830,18 +775,7 @@
                 function() {
 
 
-                    /*
-                     * Hide Salesforce's standard
-                     * red launcher again.
-                     */
-
                     hideSalesforceLauncher();
-
-
-                    /*
-                     * Restore our custom Julienne
-                     * launcher.
-                     */
 
                     showCustomLauncher();
 
@@ -854,7 +788,6 @@
         }
 
     );
-
 
 
     /* =====================================================
@@ -880,16 +813,13 @@
 
 
             /*
-             * Prevent Salesforce's normal
-             * round red button from showing
-             * during initial load.
+             * Hide Salesforce default round launcher.
              */
 
             embeddedservice_bootstrap
                 .settings
                 .hideChatButtonOnLoad =
                     true;
-
 
 
             embeddedservice_bootstrap.init(
@@ -928,19 +858,16 @@
 </script>
 
 
-
 <!-- ==========================================================
      SALESFORCE EMBEDDED MESSAGING
      ========================================================== -->
 
 <script
-
     type="text/javascript"
 
     src="https://escoffier.my.site.com/ESWJulienneedu11787765871616/assets/js/bootstrap.min.js"
 
     onload="initEmbeddedMessaging()">
-
 </script>
 
 
