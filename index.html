@@ -8,10 +8,6 @@
 
     <style>
 
-        /* =====================================================
-           PAGE
-           ===================================================== */
-
         html,
         body {
             margin: 0;
@@ -33,11 +29,11 @@
 
             z-index: 999999;
 
+            width: 250px;
+
             display: flex;
             flex-direction: column;
-
-            /* Center button + greeting */
-            align-items: center;
+            align-items: stretch;
         }
 
 
@@ -46,16 +42,19 @@
            ===================================================== */
 
         #julienneLauncher {
-            height: 54px;
+            box-sizing: border-box;
 
-            padding: 0 24px;
+            width: 100%;
+            height: 50px;
+
+            padding: 0 18px;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
             border: none;
-            border-radius: 27px;
+            border-radius: 25px;
 
             background: #c8102e;
             color: #ffffff;
@@ -78,8 +77,8 @@
 
 
         .julienne-launcher-text {
-            font-size: 17px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 400;
             white-space: nowrap;
         }
 
@@ -93,11 +92,11 @@
 
             box-sizing: border-box;
 
-            width: 285px;
+            width: 100%;
 
             margin-top: 8px;
 
-            padding: 14px 18px;
+            padding: 12px 16px;
 
             background: #ffffff;
             color: #222222;
@@ -109,15 +108,14 @@
                 Helvetica,
                 sans-serif;
 
-            font-size: 16px;
-            line-height: 1.35;
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 1.4;
 
             box-shadow:
                 0 3px 12px rgba(0, 0, 0, 0.18);
         }
 
-
-        /* Centered arrow */
 
         #julienneGreeting::before {
             content: "";
@@ -168,29 +166,34 @@
                 right: 14px;
                 bottom: 18px;
 
-                align-items: center;
+                width: 230px;
             }
 
 
             #julienneLauncher {
-                height: 50px;
+                width: 100%;
+                height: 46px;
 
-                padding: 0 20px;
+                padding: 0 16px;
 
-                border-radius: 25px;
+                border-radius: 23px;
             }
 
 
             .julienne-launcher-text {
-                font-size: 15px;
+                font-size: 13px;
+                font-weight: 400;
             }
 
 
             #julienneGreeting {
-                width: 260px;
-                font-size: 15px;
-            }
+                width: 100%;
 
+                padding: 11px 14px;
+
+                font-size: 12px;
+                font-weight: 400;
+            }
         }
 
     </style>
@@ -199,10 +202,6 @@
 
 <body>
 
-
-<!-- ==========================================================
-     CUSTOM JULIENNE LAUNCHER
-     ========================================================== -->
 
 <div id="julienneLauncherWrapper">
 
@@ -229,10 +228,6 @@
 
 <script type="text/javascript">
 
-    /* =====================================================
-       CONSTANTS
-       ===================================================== */
-
     const CUSTOMER_STORAGE_KEY =
         "fsc_chatCustomerInfo";
 
@@ -257,10 +252,6 @@
             "julienneLauncher"
         );
 
-
-    /* =====================================================
-       CUSTOMER STORAGE
-       ===================================================== */
 
     function getStoredCustomerInfo() {
 
@@ -317,29 +308,16 @@
     }
 
 
-    /* =====================================================
-       RETURNING CUSTOMER
-       ===================================================== */
-
     function isReturningCustomer(customerInfo) {
 
         return Boolean(
-
             customerInfo.firstName &&
-
             customerInfo.lastName &&
-
             customerInfo.email &&
-
             customerInfo.phone
-
         );
     }
 
-
-    /* =====================================================
-       SAVE CUSTOMER INFORMATION
-       ===================================================== */
 
     function saveCustomerInfo(messageData) {
 
@@ -367,13 +345,10 @@
         try {
 
             window.localStorage.setItem(
-
                 CUSTOMER_STORAGE_KEY,
-
                 JSON.stringify(
                     customerInfo
                 )
-
             );
 
 
@@ -383,48 +358,30 @@
                 "Unable to save chat information:",
                 error
             );
-
         }
     }
 
 
-    /* =====================================================
-       PRECHAT COMMUNICATION
-       ===================================================== */
-
     window.addEventListener(
-
         "message",
-
         function(event) {
-
 
             const messageData =
                 event.data;
 
 
             if (
-
                 !messageData ||
-
                 typeof messageData !== "object"
-
             ) {
-
                 return;
-
             }
 
 
-            /* Customer information requested */
-
             if (
-
                 messageData.type ===
-                    REQUEST_CUSTOMER_INFO
-
+                REQUEST_CUSTOMER_INFO
             ) {
-
 
                 const customerInfo =
                     getStoredCustomerInfo();
@@ -437,17 +394,12 @@
 
 
                 if (
-
                     event.source &&
-
                     typeof event.source.postMessage ===
                         "function"
-
                 ) {
 
-
                     event.source.postMessage(
-
                         {
 
                             type:
@@ -469,48 +421,32 @@
                                 returningCustomer
 
                         },
-
                         "*"
-
                     );
-
                 }
 
 
                 return;
-
             }
 
 
-            /* Save customer information */
-
             if (
-
                 messageData.type ===
-                    SAVE_CUSTOMER_INFO
-
+                SAVE_CUSTOMER_INFO
             ) {
 
                 saveCustomerInfo(
                     messageData
                 );
-
             }
-
         }
-
     );
 
-
-    /* =====================================================
-       SHOW / HIDE CUSTOM LAUNCHER
-       ===================================================== */
 
     function showCustomLauncher() {
 
         wrapper.style.display =
             "flex";
-
     }
 
 
@@ -518,30 +454,20 @@
 
         wrapper.style.display =
             "none";
-
     }
 
-
-    /* =====================================================
-       HIDE SALESFORCE DEFAULT BUTTON
-       ===================================================== */
 
     function hideSalesforceLauncher() {
 
         try {
 
             if (
-
                 window.embeddedservice_bootstrap &&
-
                 embeddedservice_bootstrap.utilAPI &&
-
                 typeof embeddedservice_bootstrap
                     .utilAPI
                     .hideChatButton === "function"
-
             ) {
-
 
                 embeddedservice_bootstrap
                     .utilAPI
@@ -549,49 +475,29 @@
 
             }
 
-
         } catch (error) {
 
-
             console.log(
-
                 "Salesforce launcher could not be hidden yet:",
-
                 error
-
             );
-
         }
-
     }
 
 
-    /* =====================================================
-       CUSTOM BUTTON CLICK
-       ===================================================== */
-
     launcher.addEventListener(
-
         "click",
-
         function() {
-
 
             try {
 
-
                 if (
-
                     window.embeddedservice_bootstrap &&
-
                     embeddedservice_bootstrap.utilAPI &&
-
                     typeof embeddedservice_bootstrap
                         .utilAPI
                         .launchChat === "function"
-
                 ) {
-
 
                     hideCustomLauncher();
 
@@ -601,90 +507,58 @@
                         .launchChat()
 
                         .catch(
-
                             function(error) {
 
-
                                 console.error(
-
                                     "Unable to launch chat:",
-
                                     error
-
                                 );
-
 
                                 showCustomLauncher();
 
                             }
-
                         );
 
-
                 } else {
-
 
                     console.log(
                         "Embedded Messaging is still loading."
                     );
-
                 }
 
-
             } catch (error) {
-
 
                 console.error(
                     "Unable to launch chat:",
                     error
                 );
 
-
                 showCustomLauncher();
 
             }
-
         }
-
     );
 
 
-    /* =====================================================
-       SALESFORCE BUTTON CREATED
-       REFRESH / RESTORED SESSION FIX
-       ===================================================== */
-
     window.addEventListener(
-
         "onEmbeddedMessagingButtonCreated",
-
         function() {
-
 
             console.log(
                 "Salesforce messaging button created."
             );
-
 
             hideSalesforceLauncher();
 
             showCustomLauncher();
 
         }
-
     );
 
 
-    /* =====================================================
-       EMBEDDED MESSAGING READY
-       ===================================================== */
-
     window.addEventListener(
-
         "onEmbeddedMessagingReady",
-
         function() {
-
 
             console.log(
                 "Embedded Messaging ready."
@@ -696,74 +570,46 @@
             showCustomLauncher();
 
 
-            /*
-             * Salesforce may restore the session
-             * asynchronously after page refresh.
-             */
-
             setTimeout(
-
                 function() {
 
                     hideSalesforceLauncher();
 
                 },
-
                 500
-
             );
 
 
             setTimeout(
-
                 function() {
 
                     hideSalesforceLauncher();
 
                 },
-
                 1500
-
             );
 
         }
-
     );
 
 
-    /* =====================================================
-       CHAT WINDOW OPENED
-       ===================================================== */
-
     window.addEventListener(
-
         "onEmbeddedMessagingWindowOpened",
-
         function() {
-
 
             console.log(
                 "Messaging window opened."
             );
 
-
             hideCustomLauncher();
 
         }
-
     );
 
 
-    /* =====================================================
-       CHAT WINDOW CLOSED / MINIMIZED
-       ===================================================== */
-
     window.addEventListener(
-
         "onEmbeddedMessagingWindowClosed",
-
         function() {
-
 
             console.log(
                 "Messaging window closed."
@@ -771,34 +617,23 @@
 
 
             setTimeout(
-
                 function() {
-
 
                     hideSalesforceLauncher();
 
                     showCustomLauncher();
 
                 },
-
                 100
-
             );
 
         }
-
     );
 
 
-    /* =====================================================
-       INITIALIZE SALESFORCE EMBEDDED MESSAGING
-       ===================================================== */
-
     function initEmbeddedMessaging() {
 
-
         try {
-
 
             embeddedservice_bootstrap
                 .settings
@@ -811,10 +646,6 @@
                 .restrictSessionOnMessagingChannel =
                     true;
 
-
-            /*
-             * Hide Salesforce default round launcher.
-             */
 
             embeddedservice_bootstrap
                 .settings
@@ -842,31 +673,19 @@
 
         } catch (err) {
 
-
             console.error(
-
                 "Error loading Embedded Messaging:",
-
                 err
-
             );
-
         }
-
     }
 
 </script>
 
 
-<!-- ==========================================================
-     SALESFORCE EMBEDDED MESSAGING
-     ========================================================== -->
-
 <script
     type="text/javascript"
-
     src="https://escoffier.my.site.com/ESWJulienneedu11787765871616/assets/js/bootstrap.min.js"
-
     onload="initEmbeddedMessaging()">
 </script>
 
