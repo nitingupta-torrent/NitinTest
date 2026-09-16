@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Chat</title>
 
 <style>
-
 html,
 body {
     margin: 0;
@@ -17,23 +14,19 @@ body {
     background: #fff;
 }
 
-
-/* =====================================================
-   CUSTOM JULIENNE LAUNCHER
-   ===================================================== */
+/* ================================
+   CUSTOM LAUNCHER
+   ================================ */
 
 #julienneLauncher {
     position: fixed;
-
-    right: 24px;
-    bottom: 24px;
-
+    right: 20px;
+    bottom: 20px;
     z-index: 999999;
 
     display: flex;
     align-items: center;
-
-    gap: 12px;
+    gap: 10px;
 
     font-family:
         -apple-system,
@@ -44,63 +37,56 @@ body {
 }
 
 
-/* =====================================================
-   WHITE GREETING BUBBLE
-   ===================================================== */
+/* White message bubble */
 
 #julienneGreeting {
     position: relative;
 
-    width: 210px;
-
+    width: 180px;
     box-sizing: border-box;
 
-    padding: 13px 14px;
+    padding: 11px 13px;
 
-    background: #ffffff;
-
+    background: #fff;
     color: #241b1d;
 
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 400;
-    line-height: 1.35;
+    line-height: 1.4;
 
     border-radius: 14px;
 
     box-shadow:
-        0 6px 18px rgba(0, 0, 0, 0.12);
+        0 5px 16px rgba(0, 0, 0, 0.12);
 
     cursor: pointer;
 }
 
 
-/* Speech bubble tail */
+/* Bubble tail */
 
 #julienneGreeting::after {
     content: "";
 
     position: absolute;
-
-    right: 28px;
-    bottom: -10px;
+    right: 22px;
+    bottom: -8px;
 
     width: 0;
     height: 0;
 
-    border-top: 11px solid #ffffff;
-    border-left: 11px solid transparent;
+    border-top: 9px solid #fff;
+    border-left: 9px solid transparent;
 }
 
 
-/* =====================================================
-   CLOSE BUTTON
-   ===================================================== */
+/* Close button */
 
 #julienneClose {
     position: absolute;
 
-    top: -8px;
-    right: -8px;
+    top: -7px;
+    right: -7px;
 
     width: 20px;
     height: 20px;
@@ -111,13 +97,11 @@ body {
     align-items: center;
     justify-content: center;
 
-    border: 0;
+    border: none;
     border-radius: 50%;
 
     background: #c8102e;
-    color: #ffffff;
-
-    font-family: Arial, sans-serif;
+    color: #fff;
 
     font-size: 17px;
     font-weight: 300;
@@ -127,23 +111,20 @@ body {
 }
 
 
-/* =====================================================
-   RED BOT BUTTON
-   ===================================================== */
+/* Red bot circle */
 
 #julienneIcon {
-    width: 62px;
-    height: 62px;
+    width: 52px;
+    height: 52px;
 
     padding: 0;
-
     flex-shrink: 0;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border: 0;
+    border: none;
     border-radius: 50%;
 
     background: #c8102e;
@@ -152,60 +133,47 @@ body {
 }
 
 
-/* Bot image */
+/* Bot icon */
 
 #julienneIcon svg {
-    width: 31px;
-    height: 31px;
-
-    stroke: #ffffff;
+    width: 27px;
+    height: 27px;
+    stroke: #fff;
 }
 
 
-/* =====================================================
+/* ================================
    MOBILE
-   ===================================================== */
+   ================================ */
 
 @media (max-width: 768px) {
 
     #julienneLauncher {
-        right: 14px;
-        bottom: 18px;
-
-        gap: 10px;
+        right: 12px;
+        bottom: 16px;
+        gap: 8px;
     }
-
 
     #julienneGreeting {
-        width: 200px;
-
-        padding: 12px 14px;
-
-        font-size: 13px;
-
-        border-radius: 14px;
+        width: 165px;
+        padding: 10px 12px;
+        font-size: 12px;
+        border-radius: 13px;
     }
-
 
     #julienneIcon {
-        width: 58px;
-        height: 58px;
+        width: 48px;
+        height: 48px;
     }
-
 
     #julienneIcon svg {
-        width: 29px;
-        height: 29px;
+        width: 25px;
+        height: 25px;
     }
-
-
-    /* Salesforce chat window */
 
     .embeddedMessagingFrame {
         position: fixed !important;
-
         top: auto !important;
-
         bottom: 1rem !important;
 
         height: 70dvh !important;
@@ -214,30 +182,18 @@ body {
         transform: translateY(4vh) !important;
     }
 
-
     .embeddedMessagingFrame iframe {
         height: 100% !important;
         max-height: 100% !important;
     }
-
 }
-
 </style>
-
 </head>
-
 
 <body>
 
 
-<!-- =====================================================
-     JULIENNE CUSTOM LAUNCHER
-     ===================================================== -->
-
 <div id="julienneLauncher">
-
-
-    <!-- White greeting -->
 
     <div
         id="julienneGreeting"
@@ -259,8 +215,6 @@ body {
     </div>
 
 
-    <!-- Red bot button -->
-
     <button
         id="julienneIcon"
         type="button"
@@ -272,8 +226,6 @@ body {
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
         >
-
-            <!-- Antenna -->
 
             <path
                 d="M32 12V17"
@@ -288,9 +240,6 @@ body {
                 stroke-width="3"
             />
 
-
-            <!-- Robot head -->
-
             <rect
                 x="13"
                 y="18"
@@ -299,9 +248,6 @@ body {
                 rx="11"
                 stroke-width="3"
             />
-
-
-            <!-- Eyes -->
 
             <circle
                 cx="25"
@@ -319,17 +265,11 @@ body {
                 stroke="none"
             />
 
-
-            <!-- Mouth -->
-
             <path
                 d="M25 41H39"
                 stroke-width="3"
                 stroke-linecap="round"
             />
-
-
-            <!-- Bottom -->
 
             <path
                 d="M23 49V54H41V49"
@@ -344,105 +284,78 @@ body {
 </div>
 
 
-
 <script>
-
 
 const launcher =
     document.getElementById("julienneLauncher");
 
-
 const greeting =
     document.getElementById("julienneGreeting");
 
-
 const chatIcon =
     document.getElementById("julienneIcon");
-
 
 const closeButton =
     document.getElementById("julienneClose");
 
 
-
 const STORAGE_KEY =
     "fsc_chatCustomerInfo";
-
 
 const REQUEST_INFO =
     "REQUEST_CHAT_CUSTOMER_INFO";
 
-
 const RESPONSE_INFO =
     "CHAT_CUSTOMER_INFO_RESPONSE";
-
 
 const SAVE_INFO =
     "SAVE_CHAT_CUSTOMER_INFO";
 
 
-
-/* =====================================================
-   CUSTOMER INFO FOR PRE-CHAT LWC
-   ===================================================== */
-
+/* Customer info for Pre-Chat LWC */
 
 window.addEventListener("message", event => {
 
-
     const data = event.data;
-
 
     if (!data || typeof data !== "object") {
         return;
     }
 
 
-
-    /* Request stored customer information */
-
     if (data.type === REQUEST_INFO) {
-
 
         let customer = {};
 
-
         try {
 
-            customer = JSON.parse(
-                localStorage.getItem(STORAGE_KEY) || "{}"
-            );
+            customer =
+                JSON.parse(
+                    localStorage.getItem(STORAGE_KEY) || "{}"
+                );
 
-        }
-
-        catch (e) {
+        } catch (e) {
 
             customer = {};
 
         }
 
 
-
         const firstName =
             String(customer.firstName || "").trim();
-
 
         const lastName =
             String(customer.lastName || "").trim();
 
-
         const email =
             String(customer.email || "").trim();
-
 
         const phone =
             String(customer.phone || "").trim();
 
 
-
         event.source?.postMessage(
             {
-
                 type: RESPONSE_INFO,
 
                 firstName,
@@ -457,27 +370,18 @@ window.addEventListener("message", event => {
                         email &&
                         phone
                     )
-
             },
-
             "*"
         );
-
     }
 
 
-
-    /* Save customer information */
-
     if (data.type === SAVE_INFO) {
 
-
         localStorage.setItem(
-
             STORAGE_KEY,
 
             JSON.stringify({
-
                 firstName:
                     String(data.firstName || "").trim(),
 
@@ -489,24 +393,16 @@ window.addEventListener("message", event => {
 
                 phone:
                     String(data.phone || "").trim()
-
             })
-
         );
-
     }
 
 });
 
 
-
-/* =====================================================
-   OPEN CHAT
-   ===================================================== */
-
+/* Open chat */
 
 function openChat() {
-
 
     if (
         !embeddedservice_bootstrap
@@ -516,31 +412,22 @@ function openChat() {
         return;
     }
 
-
     launcher.style.display = "none";
-
 
     embeddedservice_bootstrap
         .utilAPI
         .launchChat()
-
         .catch(() => {
 
             launcher.style.display = "flex";
 
         });
-
 }
 
 
-
-/* =====================================================
-   HIDE SALESFORCE STANDARD BUTTON
-   ===================================================== */
-
+/* Hide standard Salesforce button */
 
 function hideSalesforceButton() {
-
 
     try {
 
@@ -548,17 +435,9 @@ function hideSalesforceButton() {
             ?.utilAPI
             ?.hideChatButton();
 
-    }
-
-    catch (e) {}
+    } catch (e) {}
 
 }
-
-
-
-/* =====================================================
-   CUSTOM LAUNCHER EVENTS
-   ===================================================== */
 
 
 /* Greeting opens chat */
@@ -569,8 +448,7 @@ greeting.addEventListener(
 );
 
 
-
-/* Bot button opens chat */
+/* Bot opens chat */
 
 chatIcon.addEventListener(
     "click",
@@ -578,13 +456,11 @@ chatIcon.addEventListener(
 );
 
 
-
-/* Keyboard support */
+/* Keyboard */
 
 greeting.addEventListener(
     "keydown",
     event => {
-
 
         if (
             event.key === "Enter" ||
@@ -594,136 +470,99 @@ greeting.addEventListener(
             event.preventDefault();
 
             openChat();
-
         }
-
     }
 );
 
 
-
-/* X closes ONLY greeting */
+/* X hides greeting only */
 
 closeButton.addEventListener(
     "click",
     event => {
 
-
         event.stopPropagation();
 
-
         greeting.style.display = "none";
-
     }
 );
 
 
-
-/* =====================================================
-   SALESFORCE EVENTS
-   ===================================================== */
-
+/* Salesforce events */
 
 window.addEventListener(
     "onEmbeddedMessagingButtonCreated",
     () => {
 
-
         hideSalesforceButton();
 
-
         launcher.style.display = "flex";
-
     }
 );
-
 
 
 window.addEventListener(
     "onEmbeddedMessagingReady",
     () => {
 
-
         hideSalesforceButton();
 
-
         launcher.style.display = "flex";
-
 
         setTimeout(
             hideSalesforceButton,
             500
         );
 
-
         setTimeout(
             hideSalesforceButton,
             1500
         );
-
     }
 );
-
 
 
 window.addEventListener(
     "onEmbeddedMessagingWindowOpened",
     () => {
 
-
         launcher.style.display = "none";
-
     }
 );
-
 
 
 window.addEventListener(
     "onEmbeddedMessagingWindowClosed",
     () => {
 
-
         setTimeout(() => {
-
 
             hideSalesforceButton();
 
-
             launcher.style.display = "flex";
 
-
         }, 100);
-
     }
 );
 
 
-
-/* =====================================================
-   SALESFORCE INITIALIZATION
-   ===================================================== */
-
+/* Salesforce initialization */
 
 function initEmbeddedMessaging() {
 
-
     try {
-
 
         embeddedservice_bootstrap
             .settings
             .language = "en_US";
 
-
         embeddedservice_bootstrap
             .settings
             .restrictSessionOnMessagingChannel = true;
 
-
         embeddedservice_bootstrap
             .settings
             .hideChatButtonOnLoad = true;
-
 
 
         embeddedservice_bootstrap.init(
@@ -735,37 +574,22 @@ function initEmbeddedMessaging() {
             "https://escoffier.my.site.com/ESWJulienneedu11787765871616",
 
             {
-
                 scrt2URL:
                     "https://escoffier.my.salesforce-scrt.com"
-
             }
 
         );
 
-
-    }
-
-    catch (e) {
-
+    } catch (e) {
 
         console.error(
             "Error loading Embedded Messaging:",
             e
         );
-
     }
-
 }
 
-
 </script>
-
-
-
-<!-- =====================================================
-     SALESFORCE EMBEDDED MESSAGING
-     ===================================================== -->
 
 
 <script
@@ -775,5 +599,4 @@ function initEmbeddedMessaging() {
 
 
 </body>
-
 </html>
